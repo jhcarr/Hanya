@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="1.0" toolsVersion="1906" systemVersion="11A511" targetRuntime="iOS.CocoaTouch.iPad" nextObjectID="6" propertyAccessControl="none" initialViewController="2">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="1.0" toolsVersion="1938" systemVersion="10K540" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="2">
     <dependencies>
         <development defaultVersion="4200" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="902"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="933"/>
     </dependencies>
     <scenes>
         <scene sceneID="4">
@@ -12,18 +12,48 @@
                     <view key="view" contentMode="scaleToFill" id="5" customClass="GLKView">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="X axis" lineBreakMode="tailTruncation" minimumFontSize="10" id="aTy-g0-IfX">
+                                <rect key="frame" x="132" y="168" width="504" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Y axis" lineBreakMode="tailTruncation" minimumFontSize="10" id="OH9-hG-Eoa">
+                                <rect key="frame" x="132" y="197" width="504" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Z axis" lineBreakMode="tailTruncation" minimumFontSize="10" id="Czk-IA-oDL">
+                                <rect key="frame" x="132" y="226" width="504" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
+                    <connections>
+                        <outlet property="x" destination="aTy-g0-IfX" id="ocV-4o-efT"/>
+                        <outlet property="y" destination="OH9-hG-Eoa" id="slf-oa-ngB"/>
+                        <outlet property="z" destination="Czk-IA-oDL" id="hdx-qd-X8r"/>
+                    </connections>
                 </viewController>
             </objects>
+            <point key="canvasLocation" x="-44" y="-50"/>
         </scene>
     </scenes>
     <classes>
-        <class className="GLKView" superclassName="UIView">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/GLKView.h"/>
+        <class className="ViewController" superclassName="GLKViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/ViewController.h"/>
             <relationships>
-                <relationship kind="outlet" name="delegate"/>
+                <relationship kind="outlet" name="x" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="y" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="z" candidateClass="UILabel"/>
             </relationships>
         </class>
     </classes>

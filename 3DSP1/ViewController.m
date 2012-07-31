@@ -98,11 +98,30 @@ GLfloat gCubeVertexData[216] =
 
 @implementation ViewController
 
+// Label Variables
+@synthesize x;
+@synthesize y;
+@synthesize z;
+
 @synthesize context = _context;
 @synthesize effect = _effect;
 
+// Accelerometer data
+
+- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
+{
+    x.text = [NSString stringWithFormat:@"X is: %f", acceleration.x];
+    y.text = [NSString stringWithFormat:@"Y is: %f", acceleration.y];
+    z.text = [NSString stringWithFormat:@"Z is: %f", acceleration.z];
+}
+
 - (void)viewDidLoad
 {
+    // Accelerometer
+    UIAccelerometer *accel = [UIAccelerometer sharedAccelerometer];
+    accel.delegate = self;
+    accel.updateInterval = 1.0f/10.0f;
+    
     [super viewDidLoad];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
