@@ -84,6 +84,7 @@ GLfloat gCubeVertexData[216] =
     GLuint _vertexArray;
     GLuint _vertexBuffer;
     
+    // Acceleration globals
     GLKMatrix4 accel_modelViewMatrix;
     GLKMatrix4 baseModelViewMatrix;
 }
