@@ -2,11 +2,12 @@
 //  ViewController.m
 //  3DSP1
 //
-//  Created by kuwaharg on 7/30/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by carrju on 7/30/12.
+//  Copyright (c) 2012 Justin Carr. All rights reserved.
 //
 
 #import "ViewController.h"
+//#import <CoreMotion/CoreMotion.h>
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -81,6 +82,11 @@ GLfloat gCubeVertexData[216] =
     GLKMatrix3 _normalMatrix;
     float _rotation;
     
+    GLKMatrix4 _modelViewMatrix_accel;
+    float _prev_X;
+    float _prev_Y;
+    float _prev_Z;
+    
     GLuint _vertexArray;
     GLuint _vertexBuffer;
 }
@@ -94,6 +100,9 @@ GLfloat gCubeVertexData[216] =
 - (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
 - (BOOL)linkProgram:(GLuint)prog;
 - (BOOL)validateProgram:(GLuint)prog;
+
+float calcDelta(float, float);
+
 @end
 
 @implementation ViewController
@@ -102,17 +111,36 @@ GLfloat gCubeVertexData[216] =
 @synthesize x;
 @synthesize y;
 @synthesize z;
+@synthesize deltaX;
 
 @synthesize context = _context;
 @synthesize effect = _effect;
 
 // Accelerometer data
 
+/*
+float calcDelta(float current, float past)
+{
+    return current - past;
+}
+*/
+
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
 {
+    float xTrans = 0.0;
+    float yTrans = 0.0;
+    float zTrans = 0.0;
+    
+    xTrans = acceleration.x;
+    yTrans = acceleration.y;
+    zTrans = acceleration.z + 1.0;
+    
     x.text = [NSString stringWithFormat:@"X is: %f", acceleration.x];
     y.text = [NSString stringWithFormat:@"Y is: %f", acceleration.y];
     z.text = [NSString stringWithFormat:@"Z is: %f", acceleration.z];
+    deltaX.text = [NSString stringWithFormat:@"delta X is: %f", xTrans];
+    
+    _modelViewMatrix_accel = GLKMatrix4MakeTranslation(xTrans, yTrans, zTrans);
 }
 
 - (void)viewDidLoad
@@ -121,6 +149,39 @@ GLfloat gCubeVertexData[216] =
     UIAccelerometer *accel = [UIAccelerometer sharedAccelerometer];
     accel.delegate = self;
     accel.updateInterval = 1.0f/10.0f;
+    
+    // Gyroscope: Sample code taken from
+    self.motionManager = [[CMMotionManager alloc] init];
+    
+    if([self.motionManager isGyroAvailable])
+    {
+        /* Start the gyroscope if it is not active already */ 
+        if([self.motionManager isGyroActive] == NO)
+        {
+            /* Update us 2 times a second */
+            [self.motionManager setGyroUpdateInterval:1.0f / 2.0f];
+            
+            /* And on a handler block object */
+            
+            /* Receive the gyroscope data on this block */
+            [self.motionManager startGyroUpdatesToQueue:[NSOperationQueue mainQueue]
+                                            withHandler:^(CMGyroData *gyroData, NSError *error)
+             {
+                 NSString *x = [[NSString alloc] initWithFormat:@"%.02f",gyroData.rotationRate.x];
+                 self.gyro_xaxis.text = x;
+                 
+                 NSString *y = [[NSString alloc] initWithFormat:@"%.02f",gyroData.rotationRate.y];
+                 self.gyro_yaxis.text = y;
+                 
+                 NSString *z = [[NSString alloc] initWithFormat:@"%.02f",gyroData.rotationRate.z];
+                 self.gyro_zaxis.text = z;
+             }];
+        }
+    }
+    else
+    {
+        NSLog(@"Gyroscope not Available!");
+    }
     
     [super viewDidLoad];
     
@@ -211,6 +272,8 @@ GLfloat gCubeVertexData[216] =
 
 - (void)update
 {
+    //GLKMatrix4 accelTranslation = getAccelTrans();
+    
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
     
@@ -218,6 +281,9 @@ GLfloat gCubeVertexData[216] =
     
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
     baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
+    
+    //Inserting Acceleration data
+    baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, _modelViewMatrix_accel);
     
     // Compute the model view matrix for the object rendered with GLKit
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -1.5f);
@@ -235,7 +301,8 @@ GLfloat gCubeVertexData[216] =
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     
-    _rotation += self.timeSinceLastUpdate * 0.5f;
+    //_rotation += self.timeSinceLastUpdate * 0.5f;
+    _rotation = 60.0f;
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
