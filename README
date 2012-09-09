@@ -1,0 +1,105 @@
+Last login: Sun Sep  9 12:12:57 on ttys001
+kec2098-14:~ carrju$ ls
+Desktop					Music
+Documents				Pictures
+Downloads				Public
+Library					Sites
+Movies					carrju@flip.engr.oregonstate.edu:~
+kec2098-14:~ carrju$ cd
+kec2098-14:~ carrju$ ls
+Desktop					Music
+Documents				Pictures
+Downloads				Public
+Library					Sites
+Movies					carrju@flip.engr.oregonstate.edu:~
+kec2098-14:~ carrju$ cd carrju\@flip.engr.oregonstate.edu\:~/
+kec2098-14:carrju@flip.engr.oregonstate.edu:~ carrju$ ls
+3DSP1		3DSP1.xcodeproj	3DSP1Tests
+kec2098-14:carrju@flip.engr.oregonstate.edu:~ carrju$ cd ..
+kec2098-14:~ carrju$ ls
+Desktop					Music
+Documents				Pictures
+Downloads				Public
+Library					Sites
+Movies					carrju@flip.engr.oregonstate.edu:~
+kec2098-14:~ carrju$ rm -rf carrju\@flip.engr.oregonstate.edu\:~/
+kec2098-14:~ carrju$ ls
+Desktop		Downloads	Movies		Pictures	Sites
+Documents	Library		Music		Public
+kec2098-14:~ carrju$ cd Desktop/
+kec2098-14:Desktop carrju$ ls
+3DSP1
+CertificateSigningRequest.certSigningRequest
+kec2098-14:Desktop carrju$ cd 3DSP1/
+kec2098-14:3DSP1 carrju$ ls
+3DSP1		3DSP1.xcodeproj	3DSP1Tests
+kec2098-14:3DSP1 carrju$ git status
+# On branch dev01
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	modified:   3DSP1.xcodeproj/project.xcworkspace/xcuserdata/carrju.xcuserdatad/UserInterfaceState.xcuserstate
+#
+no changes added to commit (use "git add" and/or "git commit -a")
+kec2098-14:3DSP1 carrju$ ls -a
+.		.git		3DSP1.xcodeproj
+..		3DSP1		3DSP1Tests
+kec2098-14:3DSP1 carrju$ man ls
+kec2098-14:3DSP1 carrju$ cd .git/
+kec2098-14:.git carrju$ ls
+COMMIT_EDITMSG	branches	description	index		logs		packed-refs
+HEAD		config		hooks		info		objects		refs
+kec2098-14:.git carrju$ cd ..
+kec2098-14:3DSP1 carrju$ ls
+3DSP1		3DSP1.xcodeproj	3DSP1Tests
+kec2098-14:3DSP1 carrju$ emacs README
+
+9/9/2012
+Justin Carr
+Oregon State University 
+
+3DSP - 3D Selection Problem
+
+This application is an exploration into the iPad's gyroscope and accelerometer features	and their
+usefulness in "dead reckoning" navigation applications.	Of the online sources I have encountered
+discussing these iPad features, all of them mention that dead reckoning applications are feasible
+but no one has provided sample code or even mentioned existing applications that perform this 
+task. This application is a from-scratch dead reckoning navigation system for selecting objects
+or sub-sections of complex objects in virtual space. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-uuu:**-F1  README         All L16    (Fundamental)-----------------------------------------------------------------------------------------------------
+Auto-saving...done
