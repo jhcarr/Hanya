@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-// TEST COMMIT
-
 
 
 #import "ViewController.h"
@@ -125,7 +123,7 @@ float roundToTens (float roundThis) {
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
 {
-    //This assumes +Z = down in real-space
+    //This assumes +Z = down in real-spacef
     accel_modelViewMatrix = GLKMatrix4MakeTranslation(acceleration.x, acceleration.y, acceleration.z + 1.0f);
     
     x.text = [NSString stringWithFormat:@"X is: %f", roundToTens(acceleration.x)];
@@ -178,12 +176,8 @@ float roundToTens (float roundThis) {
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    // Return YES for supported orientations
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
-    } else {
-        return YES;
-    }
+    // The magic lens paradigm will be easier to maintain if all transtormations are relative to startup screen.
+    return NO;
 }
 
 - (void)setupGL
