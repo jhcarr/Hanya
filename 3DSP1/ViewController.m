@@ -11,6 +11,8 @@
 #import "ViewController.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
+#define AccelerometerSampleFrequency    50.0 //Hz
+#define HPFilterFactor  0.5
 
 // Uniform index.
 enum
@@ -87,6 +89,9 @@ GLfloat gCubeVertexData[216] =
     GLuint _vertexBuffer;
     
     // Acceleration globals
+    float prevAccelX;
+    float prevAccelY;
+    float prevAccelZ;
     GLKMatrix4 accel_modelViewMatrix;
     GLKMatrix4 baseModelViewMatrix;
 }
@@ -101,7 +106,7 @@ GLfloat gCubeVertexData[216] =
 - (BOOL)linkProgram:(GLuint)prog;
 - (BOOL)validateProgram:(GLuint)prog;
 
-float roundToTens (float);
+float HiPassFilter (float, float);
 
 @end
 
@@ -111,24 +116,32 @@ float roundToTens (float);
 @synthesize x;
 @synthesize y;
 @synthesize z;
+@synthesize resetButton;
 
 @synthesize context = _context;
 @synthesize effect = _effect;
 
 // Accelerometer data
-
-float roundToTens (float roundThis) {
-    return roundf(roundThis * 10.0f)/10.0f;
+float HiPassFilter (float currentVal, float previousVal) {
+    
+    // Subtract the low-pass value from the current value to get a simplified high-pass filter
+    
+    return currentVal - ( (currentVal * HPFilterFactor) + (previousVal * (1.0 - HPFilterFactor)) );
 }
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
 {
-    //This assumes +Z = down in real-spacef
-    accel_modelViewMatrix = GLKMatrix4MakeTranslation(acceleration.x, acceleration.y, acceleration.z + 1.0f);
     
-    x.text = [NSString stringWithFormat:@"X is: %f", roundToTens(acceleration.x)];
-    y.text = [NSString stringWithFormat:@"Y is: %f", roundToTens(acceleration.y)];
-    z.text = [NSString stringWithFormat:@"Z is: %f", roundToTens(acceleration.z + 1)];
+    x.text = [NSString stringWithFormat:@"X is: %f", prevAccelX];
+    y.text = [NSString stringWithFormat:@"Y is: %f", prevAccelY];
+    z.text = [NSString stringWithFormat:@"Z is: %f", prevAccelZ];
+    
+    prevAccelX = HiPassFilter(acceleration.x, prevAccelX);
+    prevAccelY = HiPassFilter(acceleration.y, prevAccelY);
+    prevAccelZ = HiPassFilter((acceleration.z + 1.0), prevAccelZ);
+    
+    //This assumes +Z = down in real-space
+    accel_modelViewMatrix = GLKMatrix4MakeTranslation(prevAccelX, prevAccelY, prevAccelZ);
 }
 
 - (void)viewDidLoad
@@ -136,7 +149,7 @@ float roundToTens (float roundThis) {
     // Accelerometer
     UIAccelerometer *accel = [UIAccelerometer sharedAccelerometer];
     accel.delegate = self;
-    accel.updateInterval = 1.0f/10.0f;
+    accel.updateInterval = 1.0f/AccelerometerSampleFrequency;
     
     [super viewDidLoad];
     
@@ -151,6 +164,9 @@ float roundToTens (float roundThis) {
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     
     [self setupGL];
+    
+    //Connect UI buttons
+    [resetButton addTarget:self action:@selector(resetView) forControlEvents:UIControlEventTouchUpInside];
     
     //initialize the baseModelViewMatrix
     baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
@@ -221,6 +237,20 @@ float roundToTens (float roundThis) {
         _program = 0;
     }
 }
+
+
+#pragma mark - Helper functions and UI components
+
+- (void)resetView{
+    NSLog(@"Resetting view...");
+    
+    prevAccelX = 0.0;
+    prevAccelY = 0.0;
+    prevAccelZ = 0.0;
+    baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
+}
+
+
 
 #pragma mark - GLKView and GLKViewController delegate methods
 
