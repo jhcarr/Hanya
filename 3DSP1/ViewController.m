@@ -14,6 +14,8 @@
 #define AccelerometerSampleFrequency    50.0 //Hz
 #define HPFilterFactor  0.5
 
+#define SharedAccel  True
+
 // Uniform index.
 enum
 {
@@ -121,29 +123,6 @@ float HiPassFilter (float, float);
 @synthesize context = _context;
 @synthesize effect = _effect;
 
-// Accelerometer data
-float HiPassFilter (float currentVal, float previousVal) {
-    
-    // Subtract the low-pass value from the current value to get a simplified high-pass filter
-    
-    return currentVal - ( (currentVal * HPFilterFactor) + (previousVal * (1.0 - HPFilterFactor)) );
-}
-
-- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
-{
-    
-    x.text = [NSString stringWithFormat:@"X is: %f", prevAccelX];
-    y.text = [NSString stringWithFormat:@"Y is: %f", prevAccelY];
-    z.text = [NSString stringWithFormat:@"Z is: %f", prevAccelZ];
-    
-    prevAccelX = HiPassFilter(acceleration.x, prevAccelX);
-    prevAccelY = HiPassFilter(acceleration.y, prevAccelY);
-    prevAccelZ = HiPassFilter((acceleration.z + 1.0), prevAccelZ);
-    
-    //This assumes +Z = down in real-space
-    accel_modelViewMatrix = GLKMatrix4MakeTranslation(prevAccelX, prevAccelY, prevAccelZ);
-}
-
 - (void)viewDidLoad
 {
     // Accelerometer
@@ -237,6 +216,53 @@ float HiPassFilter (float currentVal, float previousVal) {
         _program = 0;
     }
 }
+
+
+// I need help reading this example code - It's overloading a method/variable name.
+- (CMMotionManager *)motionManager
+{
+    CMMotionManager *motionManager = nil;
+    id appDelegate = [UIApplication sharedApplication].delegate;
+    if ([appDelegate respondsToSelector:@selector(motionManager)]) {
+        motionManager = [appDelegate motionManager];
+    }
+    return motionManager;
+}
+
+#pragma mark - Accelerometer
+
+// Accelerometer data
+float HiPassFilter (float currentVal, float previousVal) {
+    
+    // Subtract the low-pass value from the current value to get a simplified high-pass filter
+    
+    return currentVal - ( (currentVal * HPFilterFactor) + (previousVal * (1.0 - HPFilterFactor)) );
+}
+
+
+// sharedAccelerometer implementation - turn off if using CoreMotion
+#ifdef SharedAccel
+
+- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
+{
+    
+    x.text = [NSString stringWithFormat:@"X is: %f", prevAccelX];
+    y.text = [NSString stringWithFormat:@"Y is: %f", prevAccelY];
+    z.text = [NSString stringWithFormat:@"Z is: %f", prevAccelZ];
+    
+    prevAccelX = HiPassFilter(acceleration.x, prevAccelX);
+    prevAccelY = HiPassFilter(acceleration.y, prevAccelY);
+    prevAccelZ = HiPassFilter((acceleration.z + 1.0), prevAccelZ);
+    
+    //This assumes +Z = down in real-space
+    accel_modelViewMatrix = GLKMatrix4MakeTranslation(prevAccelX, prevAccelY, prevAccelZ);
+}
+
+#else
+
+//CoreMotion accelerometer implementation
+
+#endif
 
 
 #pragma mark - Helper functions and UI components

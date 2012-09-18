@@ -57,4 +57,14 @@
      */
 }
 
+- (CMMotionManager *) motionManager_appDelegate
+{
+    if (!motionManager)
+    {
+        motionManager = [[CMMotionManager alloc] init];
+    }
+    
+    return motionManager;
+}
+
 @end
