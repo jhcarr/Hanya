@@ -10,10 +10,7 @@
 #import <CoreMotion/CoreMotion.h>
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>{
-    CMMotionManager * motionManager;
 }
-
-@property (readonly) CMMotionManager * motionManager_appDelegate;
 
 @property (strong, nonatomic) UIWindow *window;
 

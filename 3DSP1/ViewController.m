@@ -12,7 +12,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 #define AccelerometerSampleFrequency    50.0 //Hz
-#define HPFilterFactor  0.5
+#define HPFilterFactor  0.8
 
 #define SharedAccel  True
 
@@ -90,6 +90,8 @@ GLfloat gCubeVertexData[216] =
     GLuint _vertexArray;
     GLuint _vertexBuffer;
     
+    CMMotionManager * sensorData;
+    
     // Acceleration globals
     float prevAccelX;
     float prevAccelY;
@@ -108,6 +110,8 @@ GLfloat gCubeVertexData[216] =
 - (BOOL)linkProgram:(GLuint)prog;
 - (BOOL)validateProgram:(GLuint)prog;
 
+- (CMMotionManager *) motionManager;
+
 float HiPassFilter (float, float);
 
 @end
@@ -125,11 +129,19 @@ float HiPassFilter (float, float);
 
 - (void)viewDidLoad
 {
+    
+#ifdef SharedAccel
     // Accelerometer
     UIAccelerometer *accel = [UIAccelerometer sharedAccelerometer];
     accel.delegate = self;
     accel.updateInterval = 1.0f/AccelerometerSampleFrequency;
+
+#else
+    // Motion Manager
+    NSLog(@"initializing MotionManager object...")
+    sensorData = [self motionManager];
     
+#endif    
     [super viewDidLoad];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
@@ -172,7 +184,13 @@ float HiPassFilter (float, float);
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // The magic lens paradigm will be easier to maintain if all transtormations are relative to startup screen.
-    return NO;
+    //return NO;
+    
+    // This is just to appease the XCode simulator tool:
+    if (UIInterfaceOrientationIsPortrait(interfaceOrientation)){
+        return YES;
+    } else return NO;
+    
 }
 
 - (void)setupGL
@@ -218,13 +236,11 @@ float HiPassFilter (float, float);
 }
 
 
-// I need help reading this example code - It's overloading a method/variable name.
 - (CMMotionManager *)motionManager
 {
-    CMMotionManager *motionManager = nil;
-    id appDelegate = [UIApplication sharedApplication].delegate;
-    if ([appDelegate respondsToSelector:@selector(motionManager)]) {
-        motionManager = [appDelegate motionManager];
+    static CMMotionManager *motionManager = nil;
+    if (!motionManager){
+        motionManager = [[CMMotionManager alloc] init];
     }
     return motionManager;
 }
