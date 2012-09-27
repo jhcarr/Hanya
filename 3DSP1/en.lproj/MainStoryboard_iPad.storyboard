@@ -46,10 +46,18 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Log Output" lineBreakMode="tailTruncation" minimumFontSize="10" id="rs5-wC-LP2">
+                                <rect key="frame" x="20" y="810" width="728" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
+                        <outlet property="logOutput" destination="rs5-wC-LP2" id="hkD-Wx-oGn"/>
                         <outlet property="resetButton" destination="jCu-9g-MZh" id="fbL-cX-pzC"/>
                         <outlet property="x" destination="aTy-g0-IfX" id="ocV-4o-efT"/>
                         <outlet property="y" destination="OH9-hG-Eoa" id="slf-oa-ngB"/>

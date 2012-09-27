@@ -14,7 +14,7 @@
 #define AccelerometerSampleFrequency    50.0 //Hz
 #define HPFilterFactor  0.8
 
-#define SharedAccel  True
+#define SharedAccel  False
 
 // Uniform index.
 enum
@@ -90,7 +90,8 @@ GLfloat gCubeVertexData[216] =
     GLuint _vertexArray;
     GLuint _vertexBuffer;
     
-    CMMotionManager * sensorData;
+    CMMotionManager * sensorManager;
+    CMAttitude * startAttitude;
     
     // Acceleration globals
     float prevAccelX;
@@ -122,6 +123,7 @@ float HiPassFilter (float, float);
 @synthesize x;
 @synthesize y;
 @synthesize z;
+@synthesize logOutput;
 @synthesize resetButton;
 
 @synthesize context = _context;
@@ -130,16 +132,27 @@ float HiPassFilter (float, float);
 - (void)viewDidLoad
 {
     
-#ifdef SharedAccel
+#if SharedAccel
     // Accelerometer
+    NSLog(@"Initializing singleton accelerometer");
     UIAccelerometer *accel = [UIAccelerometer sharedAccelerometer];
     accel.delegate = self;
     accel.updateInterval = 1.0f/AccelerometerSampleFrequency;
 
 #else
     // Motion Manager
-    NSLog(@"initializing MotionManager object...")
-    sensorData = [self motionManager];
+    NSLog(@"Initializing CMMotionManager");
+    sensorManager = [self motionManager];
+    startAttitude = nil;
+    
+    if ( ![sensorManager isGyroAvailable] ){
+        logOutput.text = @"Device does not have an available gyroscope. Application cannot proceed.";
+        NSLog(logOutput.text);
+    }
+    if ( ![sensorManager isAccelerometerAvailable] ){
+        logOutput.text = @"Device does not have an available accelerometer. Application cannot proceed.";
+        NSLog(logOutput.text);
+    }
     
 #endif    
     [super viewDidLoad];
@@ -187,7 +200,7 @@ float HiPassFilter (float, float);
     //return NO;
     
     // This is just to appease the XCode simulator tool:
-    if (UIInterfaceOrientationIsPortrait(interfaceOrientation)){
+    if (UIInterfaceOrientationPortrait == interfaceOrientation){
         return YES;
     } else return NO;
     
@@ -245,7 +258,7 @@ float HiPassFilter (float, float);
     return motionManager;
 }
 
-#pragma mark - Accelerometer
+#pragma mark - Motion Data
 
 // Accelerometer data
 float HiPassFilter (float currentVal, float previousVal) {
@@ -257,7 +270,7 @@ float HiPassFilter (float currentVal, float previousVal) {
 
 
 // sharedAccelerometer implementation - turn off if using CoreMotion
-#ifdef SharedAccel
+#if SharedAccel
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
 {
@@ -275,8 +288,11 @@ float HiPassFilter (float currentVal, float previousVal) {
 }
 
 #else
+- (void) enableGyro 
+{
+    
+}
 
-//CoreMotion accelerometer implementation
 
 #endif
 
