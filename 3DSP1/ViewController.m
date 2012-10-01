@@ -145,16 +145,19 @@ float HiPassFilter (float, float);
     sensorManager = [self motionManager];
     startAttitude = nil;
     
+    if ( ![sensorManager isAccelerometerAvailable] ){
+        logOutput.text = @"Device does not have an available accelerometer. Application cannot proceed.";
+        NSLog(logOutput.text);
+    }    
     if ( ![sensorManager isGyroAvailable] ){
         logOutput.text = @"Device does not have an available gyroscope. Application cannot proceed.";
         NSLog(logOutput.text);
     }
-    if ( ![sensorManager isAccelerometerAvailable] ){
-        logOutput.text = @"Device does not have an available accelerometer. Application cannot proceed.";
-        NSLog(logOutput.text);
-    }
     
-#endif    
+    startAttitude = sensorManager.deviceMotion.attitude;
+    
+#endif
+    
     [super viewDidLoad];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];

@@ -395,6 +395,7 @@
 		76C5D4F815C740B800DFCC06 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "3DSP1/3DSP1-Prefix.pch";
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
@@ -407,6 +408,7 @@
 		76C5D4F915C740B800DFCC06 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "3DSP1/3DSP1-Prefix.pch";
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";

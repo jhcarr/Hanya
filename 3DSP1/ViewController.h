@@ -19,10 +19,10 @@
     UILabel *logOutput;
     UIButton *resetButton;
 }
-@property (nonatomic, retain) IBOutlet UILabel *x;
-@property (nonatomic, retain) IBOutlet UILabel *y;
-@property (nonatomic, retain) IBOutlet UILabel *z;
-@property (nonatomic, retain) IBOutlet UILabel *logOutput;
-@property (nonatomic, retain) IBOutlet UIButton *resetButton;
+@property (nonatomic, strong) IBOutlet UILabel *x;
+@property (nonatomic, strong) IBOutlet UILabel *y;
+@property (nonatomic, strong) IBOutlet UILabel *z;
+@property (nonatomic, strong) IBOutlet UILabel *logOutput;
+@property (nonatomic, strong) IBOutlet UIButton *resetButton;
 
 @end
