@@ -12,6 +12,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 #define AccelerometerSampleFrequency    50.0 //Hz
+#define GyroscopeSampleFrequency        50.0 //Hz
 #define HPFilterFactor  0.8
 
 #define SharedAccel  False
@@ -112,6 +113,7 @@ GLfloat gCubeVertexData[216] =
 - (BOOL)validateProgram:(GLuint)prog;
 
 - (CMMotionManager *) motionManager;
+- (void) logToScreenAndConsole:(NSString*)text;
 
 float HiPassFilter (float, float);
 
@@ -134,7 +136,9 @@ float HiPassFilter (float, float);
     
 #if SharedAccel
     // Accelerometer
-    NSLog(@"Initializing singleton accelerometer");
+    viewLoadMessage = @"Initializing singleton accelerometer";
+    NSLog(viewLoadMessage);
+    [logOutput text:viewLoadMessage];
     UIAccelerometer *accel = [UIAccelerometer sharedAccelerometer];
     accel.delegate = self;
     accel.updateInterval = 1.0f/AccelerometerSampleFrequency;
@@ -146,12 +150,10 @@ float HiPassFilter (float, float);
     startAttitude = nil;
     
     if ( ![sensorManager isAccelerometerAvailable] ){
-        logOutput.text = @"Device does not have an available accelerometer. Application cannot proceed.";
-        NSLog(logOutput.text);
+        logToScreenAndConsole(@"Device does not have an available accelerometer. Application cannot proceed.");
     }    
     if ( ![sensorManager isGyroAvailable] ){
-        logOutput.text = @"Device does not have an available gyroscope. Application cannot proceed.";
-        NSLog(logOutput.text);
+        logToScreenAndConsole(@"Device does not have an available gyroscope. Application cannot proceed.");
     }
     
     startAttitude = sensorManager.deviceMotion.attitude;
@@ -163,7 +165,7 @@ float HiPassFilter (float, float);
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 
     if (!self.context) {
-        NSLog(@"Failed to create ES context");
+        logToScreenAndConsole(@"Failed to create ES context");
     }
     
     GLKView *view = (GLKView *)self.view;
@@ -177,6 +179,8 @@ float HiPassFilter (float, float);
     
     //initialize the baseModelViewMatrix
     baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
+    
+    logToScreenAndConsole(@"viewDidLoad complete");
 }
 
 - (void)viewDidUnload
@@ -293,9 +297,10 @@ float HiPassFilter (float currentVal, float previousVal) {
 #else
 - (void) enableGyro 
 {
+    //THIS IS THE THING THAT MAKES THE IPAD 3 GO!
+    
     
 }
-
 
 #endif
 
@@ -311,6 +316,11 @@ float HiPassFilter (float currentVal, float previousVal) {
     baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
 }
 
+- (void)logToScreenAndConsole:(NSString *) text {
+
+    logOutput.text = text;
+    NSLog(text);
+}
 
 
 #pragma mark - GLKView and GLKViewController delegate methods
