@@ -12,10 +12,10 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 #define AccelerometerSampleFrequency    50.0 //Hz
-#define GyroscopeSampleFrequency        50.0 //Hz
+#define AttitudeSampleFrequency        50.0 //Hz
 #define HPFilterFactor  0.8
 
-#define SharedAccel  False
+#define SharedAccel  1
 
 // Uniform index.
 enum
@@ -136,9 +136,7 @@ float HiPassFilter (float, float);
     
 #if SharedAccel
     // Accelerometer
-    viewLoadMessage = @"Initializing singleton accelerometer";
-    NSLog(viewLoadMessage);
-    [logOutput text:viewLoadMessage];
+    [self logToScreenAndConsole: @"Initializing singleton accelerometer"];
     UIAccelerometer *accel = [UIAccelerometer sharedAccelerometer];
     accel.delegate = self;
     accel.updateInterval = 1.0f/AccelerometerSampleFrequency;
@@ -147,7 +145,7 @@ float HiPassFilter (float, float);
     // Motion Manager
     NSLog(@"Initializing CMMotionManager");
     sensorManager = [self motionManager];
-    startAttitude = nil;
+    //startAttitude = nil;
     
     if ( ![sensorManager isAccelerometerAvailable] ){
         [self logToScreenAndConsole:@"Device does not have an available accelerometer. Application cannot proceed."];
@@ -280,8 +278,7 @@ float HiPassFilter (float currentVal, float previousVal) {
 #if SharedAccel
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
-{
-    
+{    
     x.text = [NSString stringWithFormat:@"X is: %f", prevAccelX];
     y.text = [NSString stringWithFormat:@"Y is: %f", prevAccelY];
     z.text = [NSString stringWithFormat:@"Z is: %f", prevAccelZ];
@@ -295,21 +292,29 @@ float HiPassFilter (float currentVal, float previousVal) {
 }
 
 #else
-- (void) enableGyro 
+- (void) enableAttitude
 {
-    if ( ![self.motionManager isGyroActive] ) {
-        [self.motionManager setGyroUpdateInterval: 1.0f/GyroscopeSampleFrequency];
-    
-        /* Receive the gyroscope data on this block */
-        [self.motionManager startGyroUpdatesToQueue:[NSOperationQueue mainQueue]
-                                        withHandler:^(CMGyroData *gyroData, NSError *error)
-         {
-             x.text = [[NSString alloc] initWithFormat:@"%.02f",gyroData.rotationRate.x];
-             
-             y.text = [[NSString alloc] initWithFormat:@"%.02f",gyroData.rotationRate.y];
-             
-             z.text = [[NSString alloc] initWithFormat:@"%.02f",gyroData.rotationRate.z];
-         }];
+    if ( ![self.motionManager isDeviceMotionActive] ) {
+        
+        [self.motionManager setDeviceMotionUpdateInterval: 1.0f/AttitudeSampleFrequency ];
+        
+        // CMAttitudeReferenceFrame is a predefined enum:
+        // CMAttitudeReferenceFrameXArbitraryZVertical - Z axis oriented vertically, as on a table.
+        // CMAttitudeReferenceFrameXArbitraryCorrectedZVertical - Uses magnetometer to correct yaw and results in increased CPU usage
+        
+        // Currently rolling a new queue to handle device motion updates. Not really sure if there's a better technique for this.
+        [self.motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue: [[NSOperationQueue alloc] init] withHandler: ^(CMDeviceMotion *dmReceived, NSError *error)
+        {
+            NSString *dmRecievedx = [[NSString alloc] initWithFormat: @"%.2f", dmReceived.userAcceleration.x ];
+            self.x.text = dmRecievedx;
+            
+            NSString *dmRecievedy = [[NSString alloc] initWithFormat: @"%.2f", dmReceived.userAcceleration.y ];
+            self.y.text = dmRecievedy;
+            
+            NSString *dmRecievedz = [[NSString alloc] initWithFormat: @"%.2f", dmReceived.userAcceleration.z ];
+            self.z.text = dmRecievedz;
+        }
+         ];
     }
     
 }
