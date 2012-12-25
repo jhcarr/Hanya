@@ -112,6 +112,7 @@ GLfloat gCubeVertexData[216] =
 - (BOOL)linkProgram:(GLuint)prog;
 - (BOOL)validateProgram:(GLuint)prog;
 
+- (void) enableDeviceMotionSensors;
 - (CMMotionManager *) motionManager;
 - (void)logToScreenAndConsole:(NSString*)text;
 
@@ -145,7 +146,6 @@ float HiPassFilter (float, float);
     // Motion Manager
     NSLog(@"Initializing CMMotionManager");
     sensorManager = [self motionManager];
-    //startAttitude = nil;
     
     if ( ![sensorManager isAccelerometerAvailable] ){
         [self logToScreenAndConsole:@"Device does not have an available accelerometer. Application cannot proceed."];
@@ -154,7 +154,7 @@ float HiPassFilter (float, float);
         [self logToScreenAndConsole:@"Device does not have an available gyroscope. Application cannot proceed."];
     }
     
-    startAttitude = sensorManager.deviceMotion.attitude;
+    [self enableDeviceMotionSensors];
     
 #endif
     
@@ -201,10 +201,7 @@ float HiPassFilter (float, float);
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    // The magic lens paradigm will be easier to maintain if all transtormations are relative to startup screen.
-    //return NO;
-    
-    // This is just to appease the XCode simulator tool:
+    // The application should always stay locked in portrait mode.
     if (UIInterfaceOrientationPortrait == interfaceOrientation){
         return YES;
     } else return NO;
@@ -292,7 +289,7 @@ float HiPassFilter (float currentVal, float previousVal) {
 }
 
 #else
-- (void) enableAttitude
+- (void) enableDeviceMotionSensors
 {
     if ( ![self.motionManager isDeviceMotionActive] ) {
         
