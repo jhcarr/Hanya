@@ -15,7 +15,7 @@
 #define AttitudeSampleFrequency        50.0 //Hz
 #define HPFilterFactor  0.8
 
-#define SharedAccel  1
+#define SharedAccel  0
 
 // Uniform index.
 enum
@@ -302,14 +302,19 @@ float HiPassFilter (float currentVal, float previousVal) {
         // Currently rolling a new queue to handle device motion updates. Not really sure if there's a better technique for this.
         [self.motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue: [[NSOperationQueue alloc] init] withHandler: ^(CMDeviceMotion *dmReceived, NSError *error)
         {
-            NSString *dmRecievedx = [[NSString alloc] initWithFormat: @"%.2f", dmReceived.userAcceleration.x ];
-            self.x.text = dmRecievedx;
             
-            NSString *dmRecievedy = [[NSString alloc] initWithFormat: @"%.2f", dmReceived.userAcceleration.y ];
-            self.y.text = dmRecievedy;
+            NSString * pitch = [[NSString alloc] initWithFormat: @"%.2f", dmReceived.attitude.pitch ];
+            self.x.text = pitch;
+            //[self logToScreenAndConsole: pitch];
             
-            NSString *dmRecievedz = [[NSString alloc] initWithFormat: @"%.2f", dmReceived.userAcceleration.z ];
-            self.z.text = dmRecievedz;
+            NSString * roll = [[NSString alloc] initWithFormat: @"%.2f", dmReceived.attitude.roll ];
+            self.y.text = roll;
+            //[self logToScreenAndConsole: roll];
+            
+            NSString * yaw = [[NSString alloc] initWithFormat: @"%.2f", dmReceived.attitude.yaw ];
+            self.z.text = yaw;
+            [self logToScreenAndConsole: yaw];
+            
         }
          ];
     }
