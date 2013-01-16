@@ -98,7 +98,9 @@ GLfloat gCubeVertexData[216] =
     float prevAccelX;
     float prevAccelY;
     float prevAccelZ;
-    GLKMatrix4 accel_modelViewMatrix;
+    
+    GLKMatrix4 cmRotate_modelViewMatrix;
+    GLKMatrix4 cmTranslate_modelViewMatrix;
     GLKMatrix4 baseModelViewMatrix;
 }
 @property (strong, nonatomic) EAGLContext *context;
@@ -285,7 +287,7 @@ float HiPassFilter (float currentVal, float previousVal) {
     prevAccelZ = HiPassFilter((acceleration.z + 1.0), prevAccelZ);
     
     //This assumes +Z = down in real-space
-    accel_modelViewMatrix = GLKMatrix4MakeTranslation(prevAccelX, prevAccelY, prevAccelZ);
+    cmTranslate_modelViewMatrix = GLKMatrix4MakeTranslation(prevAccelX, prevAccelY, prevAccelZ);
 }
 
 #else
@@ -303,17 +305,23 @@ float HiPassFilter (float currentVal, float previousVal) {
         [self.motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue: [[NSOperationQueue alloc] init] withHandler: ^(CMDeviceMotion *dmReceived, NSError *error)
         {
             
-            NSString * pitch = [[NSString alloc] initWithFormat: @"%.2f", dmReceived.attitude.pitch ];
-            self.x.text = pitch;
+            
+            // ----------------------------------- LOGGING DEVICE DATA TO SCREEN ------------------------------ //
+            
+            //NSString * pitch = [[NSString alloc] initWithFormat: @"Pitch : %.2f ", dmReceived.attitude.pitch ];
+            //self.x.text = pitch;
             //[self logToScreenAndConsole: pitch];
             
-            NSString * roll = [[NSString alloc] initWithFormat: @"%.2f", dmReceived.attitude.roll ];
-            self.y.text = roll;
+            //NSString * roll = [[NSString alloc] initWithFormat: @"Roll : %.2f ", dmReceived.attitude.roll ];
+            //self.y.text = roll;
             //[self logToScreenAndConsole: roll];
             
-            NSString * yaw = [[NSString alloc] initWithFormat: @"%.2f", dmReceived.attitude.yaw ];
-            self.z.text = yaw;
-            [self logToScreenAndConsole: yaw];
+            //NSString * yaw = [[NSString alloc] initWithFormat: @"Yaw : %.2f ", dmReceived.attitude.yaw ];
+            //self.z.text = yaw;
+            //[self logToScreenAndConsole: yaw];
+            
+            //NSString * combineAll = [pitch stringByAppendingString: [roll stringByAppendingString: yaw] ];
+            //[self logToScreenAndConsole:combineAll];
             
         }
          ];
@@ -354,7 +362,7 @@ float HiPassFilter (float currentVal, float previousVal) {
     baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
     
     //Multiply by acceleration translation matrix
-    baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, accel_modelViewMatrix);
+    baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, cmTranslate_modelViewMatrix);
     
     // Compute the model view matrix for the object rendered with GLKit
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -1.5f);
