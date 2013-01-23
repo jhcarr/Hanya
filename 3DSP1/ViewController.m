@@ -99,6 +99,7 @@ GLfloat gCubeVertexData[216] =
     float prevAccelY;
     float prevAccelZ;
     
+    GLKQuaternion cmQuaternion;
     GLKMatrix4 cmRotate_modelViewMatrix;
     GLKMatrix4 cmTranslate_modelViewMatrix;
     GLKMatrix4 baseModelViewMatrix;
@@ -305,23 +306,31 @@ float HiPassFilter (float currentVal, float previousVal) {
         [self.motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue: [[NSOperationQueue alloc] init] withHandler: ^(CMDeviceMotion *dmReceived, NSError *error)
         {
             
+            CMQuaternion currentAttitude_CM = dmReceived.attitude.quaternion;
+            GLKQuaternion currentAttitude_raw = GLKQuaternionMake( currentAttitude_CM.x, currentAttitude_CM.y, currentAttitude_CM.z, currentAttitude_CM.w);
+            GLKQuaternionNormalize( currentAttitude_raw );
+            
+            cmRotate_modelViewMatrix = GLKMatrix4MakeWithQuaternion(currentAttitude_raw);
+            
             
             // ----------------------------------- LOGGING DEVICE DATA TO SCREEN ------------------------------ //
             
-            //NSString * pitch = [[NSString alloc] initWithFormat: @"Pitch : %.2f ", dmReceived.attitude.pitch ];
-            //self.x.text = pitch;
-            //[self logToScreenAndConsole: pitch];
+            // Euler Angles
+//            NSString * pitch = [[NSString alloc] initWithFormat: @"Pitch : %.2f ", dmReceived.attitude.pitch ];
+//            NSString * roll = [[NSString alloc] initWithFormat: @"Roll : %.2f ", dmReceived.attitude.roll ];
+//            NSString * yaw = [[NSString alloc] initWithFormat: @"Yaw : %.2f ", dmReceived.attitude.yaw ];
+//            
+//            NSString * combineAll = [pitch stringByAppendingString: [roll stringByAppendingString: yaw] ];
+//            [self logToScreenAndConsole:combineAll];
             
-            //NSString * roll = [[NSString alloc] initWithFormat: @"Roll : %.2f ", dmReceived.attitude.roll ];
-            //self.y.text = roll;
-            //[self logToScreenAndConsole: roll];
-            
-            //NSString * yaw = [[NSString alloc] initWithFormat: @"Yaw : %.2f ", dmReceived.attitude.yaw ];
-            //self.z.text = yaw;
-            //[self logToScreenAndConsole: yaw];
-            
-            //NSString * combineAll = [pitch stringByAppendingString: [roll stringByAppendingString: yaw] ];
-            //[self logToScreenAndConsole:combineAll];
+            // Quaternion
+//            NSString * quaternionScalar = [[NSString alloc] initWithFormat: @"Scalar : %.2f ", dmReceived.attitude.quaternion.w ];
+//            NSString * quaternionVX = [[NSString alloc] initWithFormat: @"VX : %.2f ", dmReceived.attitude.quaternion.x ];
+//            NSString * quaternionVY = [[NSString alloc] initWithFormat: @"VY : %.2f ", dmReceived.attitude.quaternion.y ];
+//            NSString * quaternionVZ = [[NSString alloc] initWithFormat: @"VZ : %.2f ", dmReceived.attitude.quaternion.z ];
+//            
+//            NSString * combineQuat = [quaternionScalar stringByAppendingString: [quaternionVX stringByAppendingString:[ quaternionVY stringByAppendingString:quaternionVZ]]];
+//            [self logToScreenAndConsole:combineQuat];
             
         }
          ];
@@ -361,8 +370,9 @@ float HiPassFilter (float currentVal, float previousVal) {
     
     baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
     
-    //Multiply by acceleration translation matrix
-    baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, cmTranslate_modelViewMatrix);
+    //Multiply by motion control matrices
+    baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, cmRotate_modelViewMatrix);
+    //baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, cmTranslate_modelViewMatrix);
     
     // Compute the model view matrix for the object rendered with GLKit
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -1.5f);
@@ -381,7 +391,10 @@ float HiPassFilter (float currentVal, float previousVal) {
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     
     //_rotation += self.timeSinceLastUpdate * 0.5f;
-    _rotation = 0.0f;
+    //_rotation = 0.0f;
+    
+    // FIX THIS HACK ASAP
+    baseModelViewMatrix = GLKMatrix4Identity;
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
