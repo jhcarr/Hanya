@@ -15,7 +15,9 @@
 #define AttitudeSampleFrequency        50.0 //Hz
 #define HPFilterFactor  0.8
 
-#define SharedAccel  0
+#define SharedAccel         0
+#define DebugEulerAngles    0
+#define DebugQuat           0
 
 // Uniform index.
 enum
@@ -307,7 +309,9 @@ float HiPassFilter (float currentVal, float previousVal) {
         {
             
             CMQuaternion currentAttitude_CM = dmReceived.attitude.quaternion;
-            GLKQuaternion currentAttitude_raw = GLKQuaternionMake( currentAttitude_CM.x, currentAttitude_CM.y, currentAttitude_CM.z, currentAttitude_CM.w);
+            
+            // We negate the Z rotation in order to better simulate a real-world lens
+            GLKQuaternion currentAttitude_raw = GLKQuaternionMake( -currentAttitude_CM.x, -currentAttitude_CM.y, -currentAttitude_CM.z, currentAttitude_CM.w);
             GLKQuaternionNormalize( currentAttitude_raw );
             
             cmRotate_modelViewMatrix = GLKMatrix4MakeWithQuaternion(currentAttitude_raw);
@@ -316,21 +320,25 @@ float HiPassFilter (float currentVal, float previousVal) {
             // ----------------------------------- LOGGING DEVICE DATA TO SCREEN ------------------------------ //
             
             // Euler Angles
-//            NSString * pitch = [[NSString alloc] initWithFormat: @"Pitch : %.2f ", dmReceived.attitude.pitch ];
-//            NSString * roll = [[NSString alloc] initWithFormat: @"Roll : %.2f ", dmReceived.attitude.roll ];
-//            NSString * yaw = [[NSString alloc] initWithFormat: @"Yaw : %.2f ", dmReceived.attitude.yaw ];
-//            
-//            NSString * combineAll = [pitch stringByAppendingString: [roll stringByAppendingString: yaw] ];
-//            [self logToScreenAndConsole:combineAll];
+#if DebugEulerAngles
+            NSString * pitch = [[NSString alloc] initWithFormat: @"Pitch : %.2f ", dmReceived.attitude.pitch ];
+            NSString * roll = [[NSString alloc] initWithFormat: @"Roll : %.2f ", dmReceived.attitude.roll ];
+            NSString * yaw = [[NSString alloc] initWithFormat: @"Yaw : %.2f ", dmReceived.attitude.yaw ];
+            
+            NSString * combineAll = [pitch stringByAppendingString: [roll stringByAppendingString: yaw] ];
+            [self logToScreenAndConsole:combineAll];
+#endif
             
             // Quaternion
-//            NSString * quaternionScalar = [[NSString alloc] initWithFormat: @"Scalar : %.2f ", dmReceived.attitude.quaternion.w ];
-//            NSString * quaternionVX = [[NSString alloc] initWithFormat: @"VX : %.2f ", dmReceived.attitude.quaternion.x ];
-//            NSString * quaternionVY = [[NSString alloc] initWithFormat: @"VY : %.2f ", dmReceived.attitude.quaternion.y ];
-//            NSString * quaternionVZ = [[NSString alloc] initWithFormat: @"VZ : %.2f ", dmReceived.attitude.quaternion.z ];
-//            
-//            NSString * combineQuat = [quaternionScalar stringByAppendingString: [quaternionVX stringByAppendingString:[ quaternionVY stringByAppendingString:quaternionVZ]]];
-//            [self logToScreenAndConsole:combineQuat];
+#if DebugQuat
+            NSString * quaternionScalar = [[NSString alloc] initWithFormat: @"Scalar : %.2f ", dmReceived.attitude.quaternion.w ];
+            NSString * quaternionVX = [[NSString alloc] initWithFormat: @"VX : %.2f ", dmReceived.attitude.quaternion.x ];
+            NSString * quaternionVY = [[NSString alloc] initWithFormat: @"VY : %.2f ", dmReceived.attitude.quaternion.y ];
+            NSString * quaternionVZ = [[NSString alloc] initWithFormat: @"VZ : %.2f ", dmReceived.attitude.quaternion.z ];
+            
+            NSString * combineQuat = [quaternionScalar stringByAppendingString: [quaternionVX stringByAppendingString:[ quaternionVY stringByAppendingString:quaternionVZ]]];
+            [self logToScreenAndConsole:combineQuat];
+#endif
             
         }
          ];
@@ -353,7 +361,7 @@ float HiPassFilter (float currentVal, float previousVal) {
 }
 
 - (void)logToScreenAndConsole:(NSString *) text {
-    logOutput.text = text;
+    [logOutput setText:text];
     NSLog(text);
 }
 
