@@ -11,13 +11,16 @@
 #import "ViewController.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
-#define AccelerometerSampleFrequency    50.0 //Hz
-#define AttitudeSampleFrequency        50.0 //Hz
-#define HPFilterFactor  0.8
+#define AccelerometerSampleFrequency    50.0 // Hz
+#define CMSampleFrequency               50.0 // Hz
+#define HPFilterFactor                  0.8
+#define Gs                              9.80665 // m/s^2 acceleration due to gravity in SI
 
-#define SharedAccel         0
-#define DebugEulerAngles    0
-#define DebugQuat           0
+
+#define SharedAccel                     0
+#define DebugEulerAngles                0
+#define DebugQuat                       0
+#define DebugUserAccel                  0
 
 // Uniform index.
 enum
@@ -93,15 +96,20 @@ GLfloat gCubeVertexData[216] =
     GLuint _vertexArray;
     GLuint _vertexBuffer;
     
+    // Core Motion objects
     CMMotionManager * sensorManager;
     CMAttitude * startAttitude;
     
-    // Acceleration globals
+    // Shared accelerometer data
     float prevAccelX;
     float prevAccelY;
     float prevAccelZ;
     
-    GLKQuaternion cmQuaternion;
+    // Sensor fusion accelerometer data
+    double x_pos, y_pos, z_pos;
+    double x_vel, y_vel, z_vel;
+    
+    // Transformation matrices
     GLKMatrix4 cmRotate_modelViewMatrix;
     GLKMatrix4 cmTranslate_modelViewMatrix;
     GLKMatrix4 baseModelViewMatrix;
@@ -258,11 +266,14 @@ float HiPassFilter (float, float);
 
 - (CMMotionManager *)motionManager
 {
-    static CMMotionManager *motionManager = nil;
-    if (!motionManager){
-        motionManager = [[CMMotionManager alloc] init];
+    static CMMotionManager *mm = nil;
+    
+    if (!sensorManager){
+        mm = [[CMMotionManager alloc] init];
+        return mm;
     }
-    return motionManager;
+    else
+        return sensorManager;
 }
 
 #pragma mark - Motion Data
@@ -296,26 +307,59 @@ float HiPassFilter (float currentVal, float previousVal) {
 #else
 - (void) enableDeviceMotionSensors
 {
-    if ( ![self.motionManager isDeviceMotionActive] ) {
+    if ( ![sensorManager isDeviceMotionActive] ) {
         
-        [self.motionManager setDeviceMotionUpdateInterval: 1.0f/AttitudeSampleFrequency ];
+        [sensorManager setDeviceMotionUpdateInterval: 1.0f/CMSampleFrequency ];
         
         // CMAttitudeReferenceFrame is a predefined enum:
         // CMAttitudeReferenceFrameXArbitraryZVertical - Z axis oriented vertically, as on a table.
         // CMAttitudeReferenceFrameXArbitraryCorrectedZVertical - Uses magnetometer to correct yaw and results in increased CPU usage
         
         // Currently rolling a new queue to handle device motion updates. Not really sure if there's a better technique for this.
-        [self.motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue: [[NSOperationQueue alloc] init] withHandler: ^(CMDeviceMotion *dmReceived, NSError *error)
+        [sensorManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue: [[NSOperationQueue alloc] init] withHandler: ^(CMDeviceMotion *dmReceived, NSError *error)
         {
             
             CMQuaternion currentAttitude_CM = dmReceived.attitude.quaternion;
+            double x_posNext, y_posNext, z_posNext;
+            double x_velNext, y_velNext, z_velNext;
+
+            // multiplying out Gs to get m/s^2
+            double currentAccelerationX = (dmReceived.userAcceleration.x) * Gs;
+            double currentAccelerationY = (dmReceived.userAcceleration.y) * Gs;
+            double currentAccelerationZ = (dmReceived.userAcceleration.z) * Gs;
             
-            // We negate the Z rotation in order to better simulate a real-world lens
+            // ROTATION
+            // We negate the Z rotation in order to simulate a lens
             GLKQuaternion currentAttitude_raw = GLKQuaternionMake( -currentAttitude_CM.x, -currentAttitude_CM.y, -currentAttitude_CM.z, currentAttitude_CM.w);
             GLKQuaternionNormalize( currentAttitude_raw );
-            
             cmRotate_modelViewMatrix = GLKMatrix4MakeWithQuaternion(currentAttitude_raw);
             
+            // TRANSLATION
+            // We assume constant acceleration over the sampling interval
+            //
+            //          t_n                  t_n+1                t_n+2
+            //  --------|--------------------|--------------------|---------
+            //          x_pos                x_posNext
+            //          x_vel                x_velNext
+            
+            x_posNext = x_pos + (x_vel * (1.0/CMSampleFrequency)) + (.5 * currentAccelerationX * pow(1.0/CMSampleFrequency,2));
+            y_posNext = y_pos + (y_vel * (1.0/CMSampleFrequency)) + (.5 * currentAccelerationY * pow(1.0/CMSampleFrequency,2));
+            z_posNext = z_pos + (z_vel * (1.0/CMSampleFrequency)) + (.5 * currentAccelerationZ * pow(1.0/CMSampleFrequency,2));
+            
+            x_velNext = x_vel + (currentAccelerationX * (1.0/CMSampleFrequency));
+            y_velNext = y_vel + (currentAccelerationY * (1.0/CMSampleFrequency));
+            z_velNext = z_vel + (currentAccelerationZ * (1.0/CMSampleFrequency));
+            
+            // We negate the direction of the vector to simulate a lens
+            cmTranslate_modelViewMatrix = GLKMatrix4MakeTranslation( -x_posNext, -y_posNext, -z_posNext );
+            
+            x_pos = x_posNext;
+            y_pos = y_posNext;
+            z_pos = z_posNext;
+            
+            x_vel = x_velNext;
+            y_vel = y_velNext;
+            z_vel = z_velNext;
             
             // ----------------------------------- LOGGING DEVICE DATA TO SCREEN ------------------------------ //
             
@@ -340,6 +384,15 @@ float HiPassFilter (float currentVal, float previousVal) {
             [self logToScreenAndConsole:combineQuat];
 #endif
             
+            // User Acceleration
+#if DebugUserAcceleration
+            NSString * xAccel = [[NSString alloc] initWithFormat: @"X Acceleration : %.2f ", dmReceived.userAcceleration.x ];
+            NSString * yAccel = [[NSString alloc] initWithFormat: @"Y Acceleration : %.2f ", dmReceived.userAcceleration.y ];
+            NSString * zAccel = [[NSString alloc] initWithFormat: @"Z Acceleration : %.2f ", dmReceived.userAcceleration.z ];
+            
+            NSString * combineUserAccel = [xAccel stringByAppendingString: [yAccel stringByAppendingString: zAccel] ];
+            [self logToScreenAndConsole:combineAll];
+#endif
         }
          ];
     }
@@ -380,7 +433,7 @@ float HiPassFilter (float currentVal, float previousVal) {
     
     //Multiply by motion control matrices
     baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, cmRotate_modelViewMatrix);
-    //baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, cmTranslate_modelViewMatrix);
+    baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, cmTranslate_modelViewMatrix);
     
     // Compute the model view matrix for the object rendered with GLKit
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -1.5f);
