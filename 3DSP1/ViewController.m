@@ -20,7 +20,7 @@
 #define SharedAccel                     0
 #define DebugEulerAngles                0
 #define DebugQuat                       0
-#define DebugUserAccel                  0
+#define DebugUserAccel                  1
 
 // Uniform index.
 enum
@@ -385,13 +385,13 @@ float HiPassFilter (float currentVal, float previousVal) {
 #endif
             
             // User Acceleration
-#if DebugUserAcceleration
+#if DebugUserAccel
             NSString * xAccel = [[NSString alloc] initWithFormat: @"X Acceleration : %.2f ", dmReceived.userAcceleration.x ];
             NSString * yAccel = [[NSString alloc] initWithFormat: @"Y Acceleration : %.2f ", dmReceived.userAcceleration.y ];
             NSString * zAccel = [[NSString alloc] initWithFormat: @"Z Acceleration : %.2f ", dmReceived.userAcceleration.z ];
             
             NSString * combineUserAccel = [xAccel stringByAppendingString: [yAccel stringByAppendingString: zAccel] ];
-            [self logToScreenAndConsole:combineAll];
+            [self logToScreenAndConsole:combineUserAccel];
 #endif
         }
          ];
@@ -411,6 +411,9 @@ float HiPassFilter (float currentVal, float previousVal) {
     prevAccelY = 0.0;
     prevAccelZ = 0.0;
     baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
+    cmTranslate_modelViewMatrix = GLKMatrix4Identity;
+    cmRotate_modelViewMatrix = GLKMatrix4Identity;
+    
 }
 
 - (void)logToScreenAndConsole:(NSString *) text {
