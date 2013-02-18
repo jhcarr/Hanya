@@ -112,7 +112,7 @@ GLfloat gCubeVertexData[216] =
     // Transformation matrices
     GLKMatrix4 cmRotate_modelViewMatrix;
     GLKMatrix4 cmTranslate_modelViewMatrix;
-    GLKMatrix4 baseModelViewMatrix;
+    //GLKMatrix4 baseModelViewMatrix;
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
@@ -189,7 +189,7 @@ float HiPassFilter (float, float);
     [resetButton addTarget:self action:@selector(resetView) forControlEvents:UIControlEventTouchUpInside];
     
     //initialize the baseModelViewMatrix
-    baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
+    //baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
     
     [self logToScreenAndConsole:@"viewDidLoad complete"];
 }
@@ -351,7 +351,7 @@ float HiPassFilter (float currentVal, float previousVal) {
             z_velNext = z_vel + (currentAccelerationZ * (1.0/CMSampleFrequency));
             
             // We negate the direction of the vector to simulate a lens
-            cmTranslate_modelViewMatrix = GLKMatrix4MakeTranslation( -x_posNext, -y_posNext, -z_posNext );
+            cmTranslate_modelViewMatrix = GLKMatrix4MakeTranslation( x_posNext, y_posNext, -z_posNext );
             
             x_pos = x_posNext;
             y_pos = y_posNext;
@@ -410,10 +410,18 @@ float HiPassFilter (float currentVal, float previousVal) {
     prevAccelX = 0.0;
     prevAccelY = 0.0;
     prevAccelZ = 0.0;
-    baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
+    //baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
     cmTranslate_modelViewMatrix = GLKMatrix4Identity;
     cmRotate_modelViewMatrix = GLKMatrix4Identity;
     
+    x_pos = y_pos = z_pos = 0.0;
+    x_vel = y_vel = z_vel = 0.0;
+    
+    if ([sensorManager isDeviceMotionActive]){
+        [sensorManager stopDeviceMotionUpdates];
+    }
+    
+    [self enableDeviceMotionSensors];
 }
 
 - (void)logToScreenAndConsole:(NSString *) text {
@@ -427,6 +435,8 @@ float HiPassFilter (float currentVal, float previousVal) {
 
 - (void)update
 {
+    GLKMatrix4 baseModelViewMatrix = GLKMatrix4Identity;
+    
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
     
@@ -458,7 +468,7 @@ float HiPassFilter (float currentVal, float previousVal) {
     //_rotation = 0.0f;
     
     // FIX THIS HACK ASAP
-    baseModelViewMatrix = GLKMatrix4Identity;
+    //baseModelViewMatrix = GLKMatrix4Identity;
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
