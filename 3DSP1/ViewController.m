@@ -20,7 +20,7 @@
 #define SharedAccel                     0
 #define DebugEulerAngles                0
 #define DebugQuat                       0
-#define DebugUserAccel                  1
+#define DebugUserAccel                  0
 
 // Uniform index.
 enum
