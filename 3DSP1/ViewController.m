@@ -351,7 +351,7 @@ float HiPassFilter (float currentVal, float previousVal) {
             z_velNext = z_vel + (currentAccelerationZ * (1.0/CMSampleFrequency));
             
             // We negate the direction of the vector to simulate a lens
-            cmTranslate_modelViewMatrix = GLKMatrix4MakeTranslation( x_posNext, y_posNext, -z_posNext );
+            cmTranslate_modelViewMatrix = GLKMatrix4MakeTranslation( x_posNext, y_posNext, z_posNext );
             
             x_pos = x_posNext;
             y_pos = y_posNext;
