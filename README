@@ -4,18 +4,12 @@ Oregon State University
 
 3DSP - 3D Selection Problem
 
-This application is an exploration into the iPad's gyroscope and accelerometer features	and their
-usefulness in "dead reckoning" navigation applications.	Of the online sources I have encountered
-discussing these iPad features, all of them mention that dead reckoning applications are feasible
-but no one has provided sample code or even mentioned existing applications that perform this 
-task. This application is a from-scratch dead reckoning navigation system for selecting objects
-or sub-sections of complex objects in virtual space. 
+This application is an exploration into the iPad's gyroscope and accelerometer features	and their usefulness in "dead reckoning" navigation applications. Of the online sources I have encountered discussing these iPad features, all of them mention that dead reckoning applications are feasible but no one has provided sample code or even mentioned existing applications that perform this task. This application is a from-scratch dead reckoning navigation system for selecting objects or sub-sections of complex objects in virtual space. 
 
 Branches:
 master
 dev01
 
-The master branch contains the latest presentation-ready version of the code with all debugging 
-options turned off.
+The master branch contains the latest presentation-ready version of the code with all debugging options turned off.
 
 The dev01 branch is the main development branch and is unstable.
