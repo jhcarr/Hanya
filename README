@@ -11,38 +11,11 @@ but no one has provided sample code or even mentioned existing applications that
 task. This application is a from-scratch dead reckoning navigation system for selecting objects
 or sub-sections of complex objects in virtual space. 
 
+Branches:
+master
+dev01
 
+The master branch contains the latest presentation-ready version of the code with all debugging 
+options turned off.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--uuu:**-F1  README         All L16    (Fundamental)-----------------------------------------------------------------------------------------------------
-Auto-saving...done
+The dev01 branch is the main development branch and is unstable.
