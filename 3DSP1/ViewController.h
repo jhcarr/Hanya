@@ -18,11 +18,13 @@
     UILabel *z;
     UILabel *logOutput;
     UIButton *resetButton;
+    UISegmentedControl *modeSwitch;
 }
 @property (nonatomic, strong) IBOutlet UILabel *x;
 @property (nonatomic, strong) IBOutlet UILabel *y;
 @property (nonatomic, strong) IBOutlet UILabel *z;
 @property (nonatomic, strong) IBOutlet UILabel *logOutput;
 @property (nonatomic, strong) IBOutlet UIButton *resetButton;
+@property (nonatomic, strong) IBOutlet UISegmentedControl *modeSwitch;
 
 @end
