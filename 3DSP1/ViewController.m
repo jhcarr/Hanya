@@ -270,6 +270,8 @@ float HiPassFilter (float, float);
     glEnableVertexAttribArray(GLKVertexAttribNormal);
     glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(12));
     
+    //glBindVertexArrayOES(0); // why do we do this?
+    
     // Creating and binding marker VAO/VBO
     
     glGenVertexArraysOES(1, &_markerVertexArray);
@@ -280,7 +282,7 @@ float HiPassFilter (float, float);
     glBufferData(GL_ARRAY_BUFFER, sizeof(gMarkerVertexData), gMarkerVertexData, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 1, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     
     glBindVertexArrayOES(0); // why do we do this?
 }
@@ -518,7 +520,7 @@ float HiPassFilter (float currentVal, float previousVal) {
             
             glBindVertexArrayOES(_markerVertexArray);
             [self.effect prepareToDraw];
-            glDrawArrays(GL_LINES, 0, 36);
+            glDrawArrays(GL_LINES, 0, 18);
             
             break;
             
@@ -529,7 +531,7 @@ float HiPassFilter (float currentVal, float previousVal) {
             // Render the object with GLKit
             [self.effect prepareToDraw];
             
-            glDrawArrays(GL_LINES, 0, 36);
+            glDrawArrays(GL_LINE_LOOP, 0, 36);
             
             // Render the object again with ES2
             glUseProgram(_program);
@@ -537,7 +539,7 @@ float HiPassFilter (float currentVal, float previousVal) {
             glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
             glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
             
-            glDrawArrays(GL_LINES, 0, 36);
+            glDrawArrays(GL_LINE_LOOP, 0, 36);
             
             break;
             
