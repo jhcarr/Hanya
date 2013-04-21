@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1FCCE86216EDB932001A341A /* SpatialUnitMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FCCE86116EDB932001A341A /* SpatialUnitMarker.m */; };
+		1F7DC8BE1723BCC700A90087 /* BasicStatCalc.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F7DC8BD1723BCC700A90087 /* BasicStatCalc.m */; };
 		7614E5A61607F05700E614A5 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7614E5A51607F05700E614A5 /* CoreMotion.framework */; };
 		76C5D4BE15C740B800DFCC06 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C5D4BD15C740B800DFCC06 /* UIKit.framework */; };
 		76C5D4C015C740B800DFCC06 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C5D4BF15C740B800DFCC06 /* Foundation.framework */; };
@@ -40,8 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1FCCE86016EDB932001A341A /* SpatialUnitMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpatialUnitMarker.h; sourceTree = "<group>"; };
-		1FCCE86116EDB932001A341A /* SpatialUnitMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpatialUnitMarker.m; sourceTree = "<group>"; };
+		1F7DC8BC1723BCC700A90087 /* BasicStatCalc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicStatCalc.h; sourceTree = "<group>"; };
+		1F7DC8BD1723BCC700A90087 /* BasicStatCalc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BasicStatCalc.m; sourceTree = "<group>"; };
 		7614E5A51607F05700E614A5 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		76C5D4B915C740B700DFCC06 /* 3DSP1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 3DSP1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76C5D4BD15C740B800DFCC06 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -141,8 +141,8 @@
 				76C5D4DD15C740B800DFCC06 /* ViewController.h */,
 				76C5D4DE15C740B800DFCC06 /* ViewController.m */,
 				76C5D4C815C740B800DFCC06 /* Supporting Files */,
-				1FCCE86016EDB932001A341A /* SpatialUnitMarker.h */,
-				1FCCE86116EDB932001A341A /* SpatialUnitMarker.m */,
+				1F7DC8BC1723BCC700A90087 /* BasicStatCalc.h */,
+				1F7DC8BD1723BCC700A90087 /* BasicStatCalc.m */,
 			);
 			path = 3DSP1;
 			sourceTree = "<group>";
@@ -289,7 +289,7 @@
 				76C5D4CE15C740B800DFCC06 /* main.m in Sources */,
 				76C5D4D215C740B800DFCC06 /* AppDelegate.m in Sources */,
 				76C5D4DF15C740B800DFCC06 /* ViewController.m in Sources */,
-				1FCCE86216EDB932001A341A /* SpatialUnitMarker.m in Sources */,
+				1F7DC8BE1723BCC700A90087 /* BasicStatCalc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

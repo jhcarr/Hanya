@@ -9,15 +9,16 @@
 
 
 #import "ViewController.h"
+#import "BasicStatCalc.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
-
-// ------------- DEBUG ENV OPTIONS ---------------- //
 
 #define AccelerometerSampleFrequency    50.0 // Hz
 #define CMSampleFrequency               50.0 // Hz
 #define HPFilterFactor                  0.8
 #define Gs                              9.80665 // m/s^2 acceleration due to gravity in SI
+
+// ------------- DEBUG ENV OPTIONS ---------------- //
 
 #define DeviceMotionWithQueue           0
 #define DeviceMotionNoQueue             1
@@ -29,6 +30,7 @@
 #define DebugEulerAngles                0
 #define DebugQuat                       0
 #define DebugUserAccel                  1
+#define SensorStats                     1
 
 // ----------------------------------------------- //
 
@@ -210,6 +212,29 @@ GLfloat gMarkerVertexData[126] =
     GLKMatrix4 cmTranslate_modelViewMatrix;
     //GLKMatrix4 baseModelViewMatrix;
     GLKMatrix4 offsetFromBase;
+    
+#if SensorStats
+    //    int datumCount = 0; // for calculating averages
+    //
+    //    double x_minAccel, x_maxAccel, x_avgAccel, x_sumTotAccel;
+    //    double y_minAccel, y_maxAccel, y_avgAccel, y_sumTotAccel;
+    //    double z_minAccel, z_maxAccel, z_avgAccel, z_sumTotAccel;
+    //
+    //    double x_minVel, x_maxVel, x_avgVel, x_sumTotVel;
+    //    double y_minVel, y_maxVel, y_avgVel, y_sumTotVel;
+    //    double z_minVel, z_maxVel, z_avgVel, z_sumTotVel;
+    //
+    //    float pitch, roll yaw;
+    //    
+
+    BasicStatCalc * xAccelStats;
+    BasicStatCalc * yAccelStats;
+    BasicStatCalc * zAccelStats;
+    BasicStatCalc * xVelStats;
+    BasicStatCalc * yVelStats;
+    BasicStatCalc * zVelStats;
+#endif
+
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
@@ -224,6 +249,7 @@ GLfloat gMarkerVertexData[126] =
 
 - (void)updateOffsetMatrix;
 //- (GLKMatrix4) lockPerspective:(GLKMatrix4)stoppedPoint;
+- (void) disableDeviceMotionSensors;
 - (void) enableDeviceMotionSensors;
 - (CMMotionManager *) motionManager;
 - (void)logToScreenAndConsole:(NSString*)text;
@@ -244,6 +270,7 @@ float HiPassFilter (float, float);
 @synthesize z;
 @synthesize logOutput;
 @synthesize resetButton;
+@synthesize statsButton;
 @synthesize modeSwitch;
 @synthesize reticleToggle;
 
@@ -276,6 +303,17 @@ float HiPassFilter (float, float);
     
 #endif
     
+#if SensorStats
+    xAccelStats = [xAccelStats BasicStatCalc:@"X Accel"];
+    yAccelStats = [yAccelStats BasicStatCalc:@"Y Accel"];
+    zAccelStats = [zAccelStats BasicStatCalc:@"Z Accel"];
+    
+    xVelStats = [xVelStats BasicStatCalc:@"X Vel"];
+    yVelStats = [yVelStats BasicStatCalc:@"Y Vel"];
+    zVelStats = [zVelStats BasicStatCalc:@"Z Vel"];
+#endif
+
+    
     [super viewDidLoad];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
@@ -292,6 +330,7 @@ float HiPassFilter (float, float);
     
     //Connect UI buttons
     [resetButton addTarget:self action:@selector(resetView) forControlEvents:UIControlEventTouchUpInside];
+    [statsButton addTarget:self action:@selector(printBasicStats) forControlEvents:UIControlEventTouchUpInside];
     
     //initialize the baseModelViewMatrix
     //baseModelViewMatrix = GLKMatrix4Identity;
@@ -455,15 +494,7 @@ float HiPassFilter (float currentVal, float previousVal) {
             double currentAccelerationX = (dmReceived.userAcceleration.x) * Gs;
             double currentAccelerationY = (dmReceived.userAcceleration.y) * Gs;
             double currentAccelerationZ = (dmReceived.userAcceleration.z) * Gs;
-            
-//            NSString * xAccel = [[NSString alloc] initWithFormat: @"X Acceleration : %6.2f ", dmReceived.userAcceleration.x ];
-//            NSString * yAccel = [[NSString alloc] initWithFormat: @"Y Acceleration : %6.2f ", dmReceived.userAcceleration.y ];
-//            NSString * zAccel = [[NSString alloc] initWithFormat: @"Z Acceleration : %6.2f ", dmReceived.userAcceleration.z ];
-//            
-//            NSString * combineUserAccel = [xAccel stringByAppendingString: [yAccel stringByAppendingString: zAccel] ];
-//            
-//            NSLog(combineUserAccel);
-            
+
             // ROTATION
             // We negate the Z rotation in order to simulate a lens
             GLKQuaternion currentAttitude_raw = GLKQuaternionMake( -currentAttitude_CM.x, -currentAttitude_CM.y, -currentAttitude_CM.z, currentAttitude_CM.w);
@@ -474,7 +505,7 @@ float HiPassFilter (float currentVal, float previousVal) {
             // TRANSLATION
             // We assume constant acceleration over the sampling interval
             //
-            //          t_n                  t_n+1                t_n+2
+            //          time_n               time_n+1             time_n+2
             //  --------|--------------------|--------------------|---------
             //          x_pos                x_posNext
             //          x_vel                x_velNext
@@ -537,8 +568,19 @@ float HiPassFilter (float currentVal, float previousVal) {
             NSString * combineUserAccel = [xAccel stringByAppendingString: [yAccel stringByAppendingString: zAccel] ];
             [self logToScreenAndConsole:combineUserAccel];
 #endif
-        }
-         ];
+            
+            // Sensor Statistics
+#if SensorStats
+            [xAccelStats dupdate:dmReceived.userAcceleration.x];
+            [yAccelStats dupdate:dmReceived.userAcceleration.y];
+            [zAccelStats dupdate:dmReceived.userAcceleration.z];
+            
+            [xVelStats fupdate:x_velNext];
+            [yVelStats fupdate:y_velNext];
+            [zVelStats fupdate:z_velNext];
+#endif
+            
+        }];
         
 #else   // DeviceMotionNoQueue
         // This usage of startDeviceMotion is recommended for videogames which are only interested in the current position data of the device. Since we're storing the previous device motion data in the ViewController we don't really need to have the queue. However, this option does not seem to take into account the update interval.
@@ -644,6 +686,17 @@ float HiPassFilter (float currentVal, float previousVal) {
     NSString * combineUserAccel = [xAccel stringByAppendingString: [yAccel stringByAppendingString: zAccel] ];
     [self logToScreenAndConsole:combineUserAccel];
 #endif
+    
+    // Sensor Statistics
+#if SensorStats
+    [xAccelStats dupdate:currentAccelerationX];
+    [yAccelStats dupdate:currentAccelerationY];
+    [zAccelStats dupdate:currentAccelerationZ];
+    
+    [xVelStats fupdate:x_velNext];
+    [yVelStats fupdate:y_velNext];
+    [zVelStats fupdate:z_velNext];
+#endif
 }
 #endif
 
@@ -663,11 +716,24 @@ float HiPassFilter (float currentVal, float previousVal) {
     x_pos = y_pos = z_pos = 0.0;
     x_vel = y_vel = z_vel = 0.0;
     
+    [self disableDeviceMotionSensors];
+    [self enableDeviceMotionSensors];
+}
+
+- (void)disableDeviceMotionSensors{
     if ([sensorManager isDeviceMotionActive]){
         [sensorManager stopDeviceMotionUpdates];
     }
+}
+
+- (void)printBasicStats{
+    [self logToScreenAndConsole: [xAccelStats dToString]];
+    [self logToScreenAndConsole: [yAccelStats dToString]];
+    [self logToScreenAndConsole: [zAccelStats dToString]];
     
-    [self enableDeviceMotionSensors];
+    [self logToScreenAndConsole: [xVelStats dToString]];
+    [self logToScreenAndConsole: [yVelStats dToString]];
+    [self logToScreenAndConsole: [zVelStats dToString]];
 }
 
 - (void)logToScreenAndConsole:(NSString *) text {

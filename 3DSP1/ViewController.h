@@ -18,6 +18,7 @@
     UILabel *z;
     UILabel *logOutput;
     UIButton *resetButton;
+    UIButton *statsButton;
     UISegmentedControl *modeSwitch;
     UISwitch *reticleToggle;
 }
@@ -26,6 +27,7 @@
 @property (nonatomic, strong) IBOutlet UILabel *z;
 @property (nonatomic, strong) IBOutlet UILabel *logOutput;
 @property (nonatomic, strong) IBOutlet UIButton *resetButton;
+@property (nonatomic, strong) IBOutlet UIButton *statsButton;
 @property (nonatomic, strong) IBOutlet UISegmentedControl *modeSwitch;
 @property (nonatomic, strong) IBOutlet UISwitch *reticleToggle;
 
