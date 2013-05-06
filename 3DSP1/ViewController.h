@@ -18,17 +18,21 @@
     UILabel *z;
     UILabel *logOutput;
     UIButton *resetButton;
-    UIButton *statsButton;
     UISegmentedControl *modeSwitch;
-    UISwitch *reticleToggle;
+    UIStepper *sensorFrequencyStepper;
+    UILabel *sensorFrequencyLabel;
+    UILabel *resetSensorFreqTo;
+    UISwitch *statsSwitch;
 }
 @property (nonatomic, strong) IBOutlet UILabel *x;
 @property (nonatomic, strong) IBOutlet UILabel *y;
 @property (nonatomic, strong) IBOutlet UILabel *z;
 @property (nonatomic, strong) IBOutlet UILabel *logOutput;
 @property (nonatomic, strong) IBOutlet UIButton *resetButton;
-@property (nonatomic, strong) IBOutlet UIButton *statsButton;
 @property (nonatomic, strong) IBOutlet UISegmentedControl *modeSwitch;
-@property (nonatomic, strong) IBOutlet UISwitch *reticleToggle;
+@property (nonatomic, strong) IBOutlet UIStepper *sensorFrequencyStepper;
+@property (nonatomic, strong) IBOutlet UILabel *sensorFrequencyLabel;
+@property (nonatomic, strong) IBOutlet UILabel *resetSensorFreqTo;
+@property (nonatomic, strong) IBOutlet UISwitch *statsSwitch;
 
 @end

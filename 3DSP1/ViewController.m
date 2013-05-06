@@ -13,8 +13,8 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-#define AccelerometerSampleFrequency    50.0 // Hz
-#define CMSampleFrequency               50.0 // Hz
+//#define AccelerometerSampleFrequency    50.0 // Hz
+//#define CMSampleFrequency               50.0 // Hz
 #define HPFilterFactor                  0.8
 #define Gs                              9.80665 // m/s^2 acceleration due to gravity in SI
 
@@ -30,7 +30,7 @@
 #define DebugEulerAngles                0
 #define DebugQuat                       0
 #define DebugUserAccel                  1
-#define SensorStats                     1
+#define SensorStats                     0
 
 // ----------------------------------------------- //
 
@@ -270,9 +270,11 @@ float HiPassFilter (float, float);
 @synthesize z;
 @synthesize logOutput;
 @synthesize resetButton;
-@synthesize statsButton;
 @synthesize modeSwitch;
-@synthesize reticleToggle;
+@synthesize sensorFrequencyStepper;
+@synthesize sensorFrequencyLabel;
+@synthesize resetSensorFreqTo;
+@synthesize statsSwitch;
 
 @synthesize context = _context;
 @synthesize effect = _effect;
@@ -285,7 +287,7 @@ float HiPassFilter (float, float);
     [self logToScreenAndConsole: @"Initializing singleton accelerometer"];
     UIAccelerometer *accel = [UIAccelerometer sharedAccelerometer];
     accel.delegate = self;
-    accel.updateInterval = 1.0f/AccelerometerSampleFrequency;
+    accel.updateInterval = 1.0f/sensorFrequencyStepper.value;
 
 #else
     // Motion Manager
@@ -330,8 +332,8 @@ float HiPassFilter (float, float);
     
     //Connect UI buttons
     [resetButton addTarget:self action:@selector(resetView) forControlEvents:UIControlEventTouchUpInside];
-    [statsButton addTarget:self action:@selector(printBasicStats) forControlEvents:UIControlEventTouchUpInside];
-    
+    [sensorFrequencyStepper addTarget:self action:@selector(updateSensorFreqLabel) forControlEvents:UIControlEventValueChanged];
+
     //initialize the baseModelViewMatrix
     //baseModelViewMatrix = GLKMatrix4Identity;
     //baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
@@ -473,9 +475,11 @@ float HiPassFilter (float currentVal, float previousVal) {
 - (void) enableDeviceMotionSensors
 {
     if ( ![sensorManager isDeviceMotionActive] ) {
-
+        
+        [sensorManager setDeviceMotionUpdateInterval: 1.0f/sensorFrequencyStepper.value ];
+        [sensorFrequencyLabel setText:[ NSString stringWithFormat:@"%f", sensorFrequencyStepper.value]];
+        
 #if DeviceMotionWithQueue
-        [sensorManager setDeviceMotionUpdateInterval: 1.0f/CMSampleFrequency ];
         
         // CMAttitudeReferenceFrame is a predefined enum:
         // CMAttitudeReferenceFrameXArbitraryZVertical - Z axis oriented vertically, as on a table.
@@ -516,13 +520,13 @@ float HiPassFilter (float currentVal, float previousVal) {
             if ( fabs(currentAccelerationZ) < FilterThreshold) currentAccelerationZ = 0.0f;
 #endif
             
-            x_posNext = x_pos + (x_vel * (1.0/CMSampleFrequency)) + (.5 * currentAccelerationX * pow(1.0/CMSampleFrequency,2));
-            y_posNext = y_pos + (y_vel * (1.0/CMSampleFrequency)) + (.5 * currentAccelerationY * pow(1.0/CMSampleFrequency,2));
-            z_posNext = z_pos + (z_vel * (1.0/CMSampleFrequency)) + (.5 * currentAccelerationZ * pow(1.0/CMSampleFrequency,2));
+            x_posNext = x_pos + (x_vel * (1.0/sensorFrequencyStepper.value)) + (.5 * currentAccelerationX * pow(1.0/sensorFrequencyStepper.value,2));
+            y_posNext = y_pos + (y_vel * (1.0/sensorFrequencyStepper.value)) + (.5 * currentAccelerationY * pow(1.0/sensorFrequencyStepper.value,2));
+            z_posNext = z_pos + (z_vel * (1.0/sensorFrequencyStepper.value)) + (.5 * currentAccelerationZ * pow(1.0/sensorFrequencyStepper.value,2));
             
-            x_velNext = x_vel + (currentAccelerationX * (1.0/CMSampleFrequency));
-            y_velNext = y_vel + (currentAccelerationY * (1.0/CMSampleFrequency));
-            z_velNext = z_vel + (currentAccelerationZ * (1.0/CMSampleFrequency));
+            x_velNext = x_vel + (currentAccelerationX * (1.0/sensorFrequencyStepper.value));
+            y_velNext = y_vel + (currentAccelerationY * (1.0/sensorFrequencyStepper.value));
+            z_velNext = z_vel + (currentAccelerationZ * (1.0/sensorFrequencyStepper.value));
             
             // We negate the direction of the vector to simulate a lens
 
@@ -624,13 +628,13 @@ float HiPassFilter (float currentVal, float previousVal) {
 //    currentAccelerationX = 0.0;
 #endif
     
-    x_posNext = x_pos + (x_vel * (1.0/CMSampleFrequency)) + (.5 * currentAccelerationX * pow(1.0/CMSampleFrequency,2));
-    y_posNext = y_pos + (y_vel * (1.0/CMSampleFrequency)) + (.5 * currentAccelerationY * pow(1.0/CMSampleFrequency,2));
-    z_posNext = z_pos + (z_vel * (1.0/CMSampleFrequency)) + (.5 * currentAccelerationZ * pow(1.0/CMSampleFrequency,2));
+    x_posNext = x_pos + (x_vel * (1.0/sensorFrequencyStepper.value)) + (.5 * currentAccelerationX * pow(1.0/sensorFrequencyStepper.value,2));
+    y_posNext = y_pos + (y_vel * (1.0/sensorFrequencyStepper.value)) + (.5 * currentAccelerationY * pow(1.0/sensorFrequencyStepper.value,2));
+    z_posNext = z_pos + (z_vel * (1.0/sensorFrequencyStepper.value)) + (.5 * currentAccelerationZ * pow(1.0/sensorFrequencyStepper.value,2));
     
-    x_velNext = x_vel + (currentAccelerationX * (1.0/CMSampleFrequency));
-    y_velNext = y_vel + (currentAccelerationY * (1.0/CMSampleFrequency));
-    z_velNext = z_vel + (currentAccelerationZ * (1.0/CMSampleFrequency));
+    x_velNext = x_vel + (currentAccelerationX * (1.0/sensorFrequencyStepper.value));
+    y_velNext = y_vel + (currentAccelerationY * (1.0/sensorFrequencyStepper.value));
+    z_velNext = z_vel + (currentAccelerationZ * (1.0/sensorFrequencyStepper.value));
     
     if ( 0.0 == currentAccelerationX ) {
         x_velNext = 0.0;
@@ -726,6 +730,7 @@ float HiPassFilter (float currentVal, float previousVal) {
     }
 }
 
+#if SensorStats
 - (void)printBasicStats{
     [self logToScreenAndConsole: [xAccelStats dToString]];
     [self logToScreenAndConsole: [yAccelStats dToString]];
@@ -735,10 +740,15 @@ float HiPassFilter (float currentVal, float previousVal) {
     [self logToScreenAndConsole: [yVelStats dToString]];
     [self logToScreenAndConsole: [zVelStats dToString]];
 }
+#endif
 
 - (void)logToScreenAndConsole:(NSString *) text {
     [logOutput setText:text];
     NSLog(text);
+}
+
+- (void)updateSensorFreqLabel{
+    [resetSensorFreqTo setText:[ NSString stringWithFormat:@"%f", sensorFrequencyStepper.value]];
 }
 
 //- (GLKMatrix4)lockPerspective:(GLKMatrix4) lastViewMatrix {
@@ -769,6 +779,12 @@ float HiPassFilter (float currentVal, float previousVal) {
 
 #if DeviceMotionNoQueue
     [self noQ_updateLocals];
+#endif
+    
+#if SensorStats
+    if (statsSwitch.isOn) {
+        [self printBasicStats];
+    }
 #endif
     
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);

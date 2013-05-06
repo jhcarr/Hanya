@@ -13,28 +13,28 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="X axis" lineBreakMode="tailTruncation" minimumFontSize="10" id="aTy-g0-IfX">
-                                <rect key="frame" x="132" y="168" width="504" height="21"/>
+                                <rect key="frame" x="20" y="141" width="504" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Y axis" lineBreakMode="tailTruncation" minimumFontSize="10" id="OH9-hG-Eoa">
-                                <rect key="frame" x="132" y="197" width="504" height="21"/>
+                                <rect key="frame" x="20" y="170" width="504" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Z axis" lineBreakMode="tailTruncation" minimumFontSize="10" id="Czk-IA-oDL">
-                                <rect key="frame" x="132" y="226" width="504" height="21"/>
+                                <rect key="frame" x="20" y="199" width="504" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="jCu-9g-MZh">
-                                <rect key="frame" x="290" y="860" width="189" height="41"/>
+                                <rect key="frame" x="398" y="860" width="189" height="41"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal" title="Reset">
@@ -46,14 +46,14 @@
                                 </state>
                             </button>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Log Output" lineBreakMode="tailTruncation" minimumFontSize="10" id="rs5-wC-LP2">
-                                <rect key="frame" x="20" y="810" width="728" height="21"/>
+                                <rect key="frame" x="20" y="50" width="728" height="83"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="47M-5z-6hC">
-                                <rect key="frame" x="20" y="908" width="728" height="44"/>
+                                <rect key="frame" x="20" y="948" width="728" height="44"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="Boxes"/>
@@ -61,22 +61,49 @@
                                     <segment title="Test Grid"/>
                                 </segments>
                             </segmentedControl>
-                            <switch opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="MAe-tn-SJB">
-                                <rect key="frame" x="671" y="807" width="79" height="27"/>
+                            <stepper opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="50" maximumValue="100" stepValue="2" id="Ind-v4-M7e">
+                                <rect key="frame" x="20" y="873" width="94" height="27"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </stepper>
+                            <switch opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="oPU-yq-ziz">
+                                <rect key="frame" x="20" y="780" width="79" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </switch>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="W3I-na-ja7">
-                                <rect key="frame" x="623" y="857" width="125" height="44"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Basic stats" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="vBD-h7-Ih8">
+                                <rect key="frame" x="20" y="751" width="201" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                <state key="normal" title="Stats Log">
-                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <state key="highlighted">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                            </button>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Current sensor queries/sec:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="60j-aI-bsZ">
+                                <rect key="frame" x="20" y="815" width="219" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="nnP-Jv-Oem">
+                                <rect key="frame" x="235" y="815" width="52" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Reset to:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Dag-jX-1Hu">
+                                <rect key="frame" x="20" y="844" width="70" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="joJ-JN-4l8">
+                                <rect key="frame" x="139" y="876" width="62" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
@@ -85,8 +112,10 @@
                         <outlet property="logOutput" destination="rs5-wC-LP2" id="hkD-Wx-oGn"/>
                         <outlet property="modeSwitch" destination="47M-5z-6hC" id="x6E-mu-nhM"/>
                         <outlet property="resetButton" destination="jCu-9g-MZh" id="fbL-cX-pzC"/>
-                        <outlet property="reticleToggle" destination="MAe-tn-SJB" id="fzE-1X-0wy"/>
-                        <outlet property="statsButton" destination="W3I-na-ja7" id="kIa-Fg-AEZ"/>
+                        <outlet property="resetSensorFreqTo" destination="joJ-JN-4l8" id="CSa-he-hyk"/>
+                        <outlet property="sensorFrequencyLabel" destination="nnP-Jv-Oem" id="s98-zl-1Z5"/>
+                        <outlet property="sensorFrequencyStepper" destination="Ind-v4-M7e" id="Ydd-MK-lJu"/>
+                        <outlet property="statsSwitch" destination="oPU-yq-ziz" id="SJN-Lm-1o4"/>
                         <outlet property="x" destination="aTy-g0-IfX" id="ocV-4o-efT"/>
                         <outlet property="y" destination="OH9-hG-Eoa" id="slf-oa-ngB"/>
                         <outlet property="z" destination="Czk-IA-oDL" id="hdx-qd-X8r"/>
