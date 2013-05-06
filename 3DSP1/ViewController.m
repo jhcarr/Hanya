@@ -21,11 +21,11 @@
 // ------------- DEBUG ENV OPTIONS ---------------- //
 
 #define DeviceMotionWithQueue           0
-#define DeviceMotionNoQueue             1
-#define SharedAccel                     !(DeviceMotionWithQueue || DeviceMotionNoQueue)
+#define DeviceMotionNoQueue             !DeviceMotionWithQueue
+//#define SharedAccel                     !(DeviceMotionWithQueue || DeviceMotionNoQueue)
 
 #define ApplyFilters                    1
-#define FilterThreshold                 .3
+//#define FilterThreshold                 .3 // Moved to UI
 
 #define DebugEulerAngles                0
 #define DebugQuat                       0
@@ -274,7 +274,8 @@ float HiPassFilter (float, float);
 @synthesize sensorFrequencyStepper;
 @synthesize sensorFrequencyLabel;
 @synthesize resetSensorFreqTo;
-@synthesize statsSwitch;
+@synthesize filterValStepper;
+@synthesize filterValLabel;
 
 @synthesize context = _context;
 @synthesize effect = _effect;
@@ -330,9 +331,12 @@ float HiPassFilter (float, float);
     
     [self setupGL];
     
-    //Connect UI buttons
+    //Connect UI buttons and init labels
     [resetButton addTarget:self action:@selector(resetView) forControlEvents:UIControlEventTouchUpInside];
     [sensorFrequencyStepper addTarget:self action:@selector(updateSensorFreqLabel) forControlEvents:UIControlEventValueChanged];
+    [filterValStepper addTarget:self action:@selector(updateFilterThresholdLabel) forControlEvents:UIControlEventValueChanged];
+    [self updateSensorFreqLabel];
+    [self updateFilterThresholdLabel];
 
     //initialize the baseModelViewMatrix
     //baseModelViewMatrix = GLKMatrix4Identity;
@@ -515,9 +519,9 @@ float HiPassFilter (float currentVal, float previousVal) {
             //          x_vel                x_velNext
             
 #if ApplyFilters
-            if ( fabs(currentAccelerationX) < FilterThreshold) currentAccelerationX = 0.0f;
-            if ( fabs(currentAccelerationY) < FilterThreshold) currentAccelerationY = 0.0f;
-            if ( fabs(currentAccelerationZ) < FilterThreshold) currentAccelerationZ = 0.0f;
+            if ( fabs(currentAccelerationX) < filterValStepper.value) currentAccelerationX = 0.0f;
+            if ( fabs(currentAccelerationY) < filterValStepper.value) currentAccelerationY = 0.0f;
+            if ( fabs(currentAccelerationZ) < filterValStepper.value) currentAccelerationZ = 0.0f;
 #endif
             
             x_posNext = x_pos + (x_vel * (1.0/sensorFrequencyStepper.value)) + (.5 * currentAccelerationX * pow(1.0/sensorFrequencyStepper.value,2));
@@ -541,6 +545,8 @@ float HiPassFilter (float currentVal, float previousVal) {
             z_vel = z_velNext;
             
             // ----------------------------------- LOGGING DEVICE DATA TO SCREEN ------------------------------ //
+            
+#if !SensorStats
             
             // Euler Angles
 #if DebugEulerAngles
@@ -571,6 +577,8 @@ float HiPassFilter (float currentVal, float previousVal) {
             
             NSString * combineUserAccel = [xAccel stringByAppendingString: [yAccel stringByAppendingString: zAccel] ];
             [self logToScreenAndConsole:combineUserAccel];
+#endif
+            
 #endif
             
             // Sensor Statistics
@@ -620,9 +628,9 @@ float HiPassFilter (float currentVal, float previousVal) {
     //  TRANSLATION
     
 #if ApplyFilters
-    if ( fabs(currentAccelerationX) < FilterThreshold) currentAccelerationX = 0.0;
-    if ( fabs(currentAccelerationY) < FilterThreshold) currentAccelerationY = 0.0;
-    if ( fabs(currentAccelerationZ) < FilterThreshold) currentAccelerationZ = 0.0;
+    if ( fabs(currentAccelerationX) < filterValStepper.value) currentAccelerationX = 0.0;
+    if ( fabs(currentAccelerationY) < filterValStepper.value) currentAccelerationY = 0.0;
+    if ( fabs(currentAccelerationZ) < filterValStepper.value) currentAccelerationZ = 0.0;
 //    currentAccelerationZ = 0.0;
 //    currentAccelerationY = 0.0;
 //    currentAccelerationX = 0.0;
@@ -660,6 +668,8 @@ float HiPassFilter (float currentVal, float previousVal) {
 
     // ----------------------------------- LOGGING DEVICE DATA TO SCREEN ------------------------------ //
     
+#if !SensorStats
+    
     // Euler Angles
 #if DebugEulerAngles
     NSString * pitch = [[NSString alloc] initWithFormat: @"Pitch : %6.2f ", sensorManager.devicemotion.attitude.pitch ];
@@ -689,6 +699,8 @@ float HiPassFilter (float currentVal, float previousVal) {
     
     NSString * combineUserAccel = [xAccel stringByAppendingString: [yAccel stringByAppendingString: zAccel] ];
     [self logToScreenAndConsole:combineUserAccel];
+#endif
+    
 #endif
     
     // Sensor Statistics
@@ -750,6 +762,9 @@ float HiPassFilter (float currentVal, float previousVal) {
 - (void)updateSensorFreqLabel{
     [resetSensorFreqTo setText:[ NSString stringWithFormat:@"%f", sensorFrequencyStepper.value]];
 }
+- (void)updateFilterThresholdLabel{
+    [filterValLabel setText: [ NSString stringWithFormat:@"%2.2f", filterValStepper.value]];
+}
 
 //- (GLKMatrix4)lockPerspective:(GLKMatrix4) lastViewMatrix {
 //    
@@ -782,9 +797,7 @@ float HiPassFilter (float currentVal, float previousVal) {
 #endif
     
 #if SensorStats
-    if (statsSwitch.isOn) {
         [self printBasicStats];
-    }
 #endif
     
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);

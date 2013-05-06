@@ -22,7 +22,8 @@
     UIStepper *sensorFrequencyStepper;
     UILabel *sensorFrequencyLabel;
     UILabel *resetSensorFreqTo;
-    UISwitch *statsSwitch;
+    UIStepper   *filterValStepper;
+    UILabel *filterValLabel;
 }
 @property (nonatomic, strong) IBOutlet UILabel *x;
 @property (nonatomic, strong) IBOutlet UILabel *y;
@@ -33,6 +34,7 @@
 @property (nonatomic, strong) IBOutlet UIStepper *sensorFrequencyStepper;
 @property (nonatomic, strong) IBOutlet UILabel *sensorFrequencyLabel;
 @property (nonatomic, strong) IBOutlet UILabel *resetSensorFreqTo;
-@property (nonatomic, strong) IBOutlet UISwitch *statsSwitch;
+@property (nonatomic, strong) IBOutlet UIStepper *filterValStepper;
+@property (nonatomic, strong) IBOutlet UILabel *filterValLabel;
 
 @end

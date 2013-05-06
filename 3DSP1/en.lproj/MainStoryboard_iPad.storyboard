@@ -65,17 +65,6 @@
                                 <rect key="frame" x="20" y="873" width="94" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </stepper>
-                            <switch opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="oPU-yq-ziz">
-                                <rect key="frame" x="20" y="780" width="79" height="27"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </switch>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Basic stats" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="vBD-h7-Ih8">
-                                <rect key="frame" x="20" y="751" width="201" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Current sensor queries/sec:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="60j-aI-bsZ">
                                 <rect key="frame" x="20" y="815" width="219" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -104,18 +93,37 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <stepper opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.29999999999999999" maximumValue="2" stepValue="0.10000000000000001" id="hSZ-s7-syj">
+                                <rect key="frame" x="14" y="754" width="94" height="27"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </stepper>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Filter Threshold:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="6YB-sR-kxz">
+                                <rect key="frame" x="14" y="725" width="131" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="E3t-RN-fEi">
+                                <rect key="frame" x="139" y="757" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                     </view>
                     <connections>
+                        <outlet property="filterValLabel" destination="E3t-RN-fEi" id="K0I-mc-VnM"/>
+                        <outlet property="filterValStepper" destination="hSZ-s7-syj" id="vWM-N2-KbJ"/>
                         <outlet property="logOutput" destination="rs5-wC-LP2" id="hkD-Wx-oGn"/>
                         <outlet property="modeSwitch" destination="47M-5z-6hC" id="x6E-mu-nhM"/>
                         <outlet property="resetButton" destination="jCu-9g-MZh" id="fbL-cX-pzC"/>
                         <outlet property="resetSensorFreqTo" destination="joJ-JN-4l8" id="CSa-he-hyk"/>
                         <outlet property="sensorFrequencyLabel" destination="nnP-Jv-Oem" id="s98-zl-1Z5"/>
                         <outlet property="sensorFrequencyStepper" destination="Ind-v4-M7e" id="Ydd-MK-lJu"/>
-                        <outlet property="statsSwitch" destination="oPU-yq-ziz" id="SJN-Lm-1o4"/>
                         <outlet property="x" destination="aTy-g0-IfX" id="ocV-4o-efT"/>
                         <outlet property="y" destination="OH9-hG-Eoa" id="slf-oa-ngB"/>
                         <outlet property="z" destination="Czk-IA-oDL" id="hdx-qd-X8r"/>
@@ -126,6 +134,24 @@
             <point key="canvasLocation" x="-182" y="178"/>
         </scene>
     </scenes>
+    <classes>
+        <class className="ViewController" superclassName="GLKViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/ViewController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="filterValLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="filterValStepper" candidateClass="UIStepper"/>
+                <relationship kind="outlet" name="logOutput" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="modeSwitch" candidateClass="UISegmentedControl"/>
+                <relationship kind="outlet" name="resetButton" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="resetSensorFreqTo" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="sensorFrequencyLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="sensorFrequencyStepper" candidateClass="UIStepper"/>
+                <relationship kind="outlet" name="x" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="y" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="z" candidateClass="UILabel"/>
+            </relationships>
+        </class>
+    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <nil key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
