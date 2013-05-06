@@ -271,11 +271,15 @@ float HiPassFilter (float, float);
 @synthesize logOutput;
 @synthesize resetButton;
 @synthesize modeSwitch;
+@synthesize sensorUIHeader1;
+@synthesize sensorUIHeader2;
 @synthesize sensorFrequencyStepper;
 @synthesize sensorFrequencyLabel;
 @synthesize resetSensorFreqTo;
+@synthesize filterUIHeader;
 @synthesize filterValStepper;
 @synthesize filterValLabel;
+@synthesize UICompsToggle;
 
 @synthesize context = _context;
 @synthesize effect = _effect;
@@ -332,6 +336,7 @@ float HiPassFilter (float, float);
     [self setupGL];
     
     //Connect UI buttons and init labels
+    [UICompsToggle addTarget:self action:@selector(toggleUIElements) forControlEvents:UIControlEventTouchUpInside];
     [resetButton addTarget:self action:@selector(resetView) forControlEvents:UIControlEventTouchUpInside];
     [sensorFrequencyStepper addTarget:self action:@selector(updateSensorFreqLabel) forControlEvents:UIControlEventValueChanged];
     [filterValStepper addTarget:self action:@selector(updateFilterThresholdLabel) forControlEvents:UIControlEventValueChanged];
@@ -764,6 +769,43 @@ float HiPassFilter (float currentVal, float previousVal) {
 }
 - (void)updateFilterThresholdLabel{
     [filterValLabel setText: [ NSString stringWithFormat:@"%2.2f", filterValStepper.value]];
+}
+
+- (void)toggleUIElements{
+
+    if (UICompsToggle.isOn){
+        
+        x.hidden =
+        y.hidden =
+        z.hidden =
+        logOutput.hidden =
+        modeSwitch.hidden =
+        sensorUIHeader1.hidden =
+        sensorUIHeader2.hidden =
+        sensorFrequencyStepper.hidden =
+        sensorFrequencyLabel.hidden =
+        resetSensorFreqTo.hidden =
+        filterUIHeader.hidden =
+        filterValStepper.hidden =
+        filterValLabel.hidden =
+        FALSE;
+        
+    } else {
+        x.hidden =
+        y.hidden =
+        z.hidden =
+        logOutput.hidden =
+        modeSwitch.hidden =
+        sensorUIHeader1.hidden =
+        sensorUIHeader2.hidden =
+        sensorFrequencyStepper.hidden =
+        sensorFrequencyLabel.hidden =
+        resetSensorFreqTo.hidden =
+        filterUIHeader.hidden =
+        filterValStepper.hidden =
+        filterValLabel.hidden =
+        TRUE;
+    }
 }
 
 //- (GLKMatrix4)lockPerspective:(GLKMatrix4) lastViewMatrix {

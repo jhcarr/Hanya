@@ -34,7 +34,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="jCu-9g-MZh">
-                                <rect key="frame" x="398" y="860" width="189" height="41"/>
+                                <rect key="frame" x="290" y="867" width="189" height="41"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal" title="Reset">
@@ -111,11 +111,17 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <switch opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="MOw-c3-evf">
+                                <rect key="frame" x="596" y="873" width="79" height="27"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </switch>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                     </view>
                     <connections>
+                        <outlet property="UICompsToggle" destination="MOw-c3-evf" id="9HZ-kL-yt9"/>
+                        <outlet property="filterUIHeader" destination="6YB-sR-kxz" id="y1h-c9-qP4"/>
                         <outlet property="filterValLabel" destination="E3t-RN-fEi" id="K0I-mc-VnM"/>
                         <outlet property="filterValStepper" destination="hSZ-s7-syj" id="vWM-N2-KbJ"/>
                         <outlet property="logOutput" destination="rs5-wC-LP2" id="hkD-Wx-oGn"/>
@@ -124,6 +130,8 @@
                         <outlet property="resetSensorFreqTo" destination="joJ-JN-4l8" id="CSa-he-hyk"/>
                         <outlet property="sensorFrequencyLabel" destination="nnP-Jv-Oem" id="s98-zl-1Z5"/>
                         <outlet property="sensorFrequencyStepper" destination="Ind-v4-M7e" id="Ydd-MK-lJu"/>
+                        <outlet property="sensorUIHeader1" destination="60j-aI-bsZ" id="S4p-Co-Sw8"/>
+                        <outlet property="sensorUIHeader2" destination="Dag-jX-1Hu" id="PMh-0h-eG8"/>
                         <outlet property="x" destination="aTy-g0-IfX" id="ocV-4o-efT"/>
                         <outlet property="y" destination="OH9-hG-Eoa" id="slf-oa-ngB"/>
                         <outlet property="z" destination="Czk-IA-oDL" id="hdx-qd-X8r"/>
@@ -134,24 +142,6 @@
             <point key="canvasLocation" x="-182" y="178"/>
         </scene>
     </scenes>
-    <classes>
-        <class className="ViewController" superclassName="GLKViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/ViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="filterValLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="filterValStepper" candidateClass="UIStepper"/>
-                <relationship kind="outlet" name="logOutput" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="modeSwitch" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="resetButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="resetSensorFreqTo" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="sensorFrequencyLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="sensorFrequencyStepper" candidateClass="UIStepper"/>
-                <relationship kind="outlet" name="x" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="y" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="z" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <nil key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
