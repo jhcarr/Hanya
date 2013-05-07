@@ -550,6 +550,11 @@ float HiPassFilter (float currentVal, float previousVal) {
             z_vel = z_velNext;
             
             // ----------------------------------- LOGGING DEVICE DATA TO SCREEN ------------------------------ //
+
+            // VE Position Data
+            x.text = [NSString stringWithFormat:@"X pos: %f", x_pos];
+            y.text = [NSString stringWithFormat:@"Y pos: %f", y_pos];
+            z.text = [NSString stringWithFormat:@"Z pos: %f", z_pos];
             
 #if !SensorStats
             
@@ -672,6 +677,11 @@ float HiPassFilter (float currentVal, float previousVal) {
     z_vel = z_velNext;
 
     // ----------------------------------- LOGGING DEVICE DATA TO SCREEN ------------------------------ //
+    
+    // VE Position Data
+    x.text = [NSString stringWithFormat:@"X pos: %f", x_pos];
+    y.text = [NSString stringWithFormat:@"Y pos: %f", y_pos];
+    z.text = [NSString stringWithFormat:@"Z pos: %f", z_pos];
     
 #if !SensorStats
     
