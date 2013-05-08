@@ -213,6 +213,8 @@ GLfloat gMarkerVertexData[126] =
     //GLKMatrix4 baseModelViewMatrix;
     GLKMatrix4 offsetFromBase;
     
+    GLKMatrixStackRef modelView_stack;
+    
 #if SensorStats
     //    int datumCount = 0; // for calculating averages
     //
@@ -841,6 +843,8 @@ float HiPassFilter (float currentVal, float previousVal) {
 
 - (void)update
 {
+    
+    modelView_stack = GLKMatrixStackCreate(0);
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4Identity;
     baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, offsetFromBase);
 
@@ -855,26 +859,35 @@ float HiPassFilter (float currentVal, float previousVal) {
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     //GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
-    
+
     self.effect.transform.projectionMatrix = projectionMatrix;
+
+    // 1) Copies top matrix and pushes to stack (in this case, identity matrix. Stack height is 2).
+    GLKMatrixStackPush(modelView_stack);
     
-    baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
+    // 3) Multiply by motion control matrices to get the transformation of the world
+    GLKMatrixStackMultiplyMatrix4(modelView_stack, cmRotate_modelViewMatrix);
+    GLKMatrixStackMultiplyMatrix4(modelView_stack, cmTranslate_modelViewMatrix);
     
-    //Multiply by motion control matrices
-    baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, cmRotate_modelViewMatrix);
-    baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, cmTranslate_modelViewMatrix);
+    // 3)   User-space orientation = device reference frame + 90 degree rotation about device x-axis
+    //      The third matrix in the stack will always be the user orientation
+    GLKMatrixStackPush(modelView_stack);
+    GLKMatrixStackMultiplyMatrix4(modelView_stack, GLKMatrix4MakeRotation(GLKMathDegreesToRadians(90.0f), 1, 0, 0));
+    
+//    baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, cmRotate_modelViewMatrix);
+//    baseModelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, cmTranslate_modelViewMatrix);
     
     // Compute the model view matrix for the object rendered with GLKit
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -1.5f);
     modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotation, 1.0f, 1.0f, 1.0f);
-    modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
+    modelViewMatrix = GLKMatrix4Multiply(GLKMatrixStackGetMatrix4(modelView_stack), modelViewMatrix);
     
     self.effect.transform.modelviewMatrix = modelViewMatrix;
     
     // Compute the model view matrix for the object rendered with ES2
     modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 1.5f);
     modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotation, 1.0f, 1.0f, 1.0f);
-    modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
+    modelViewMatrix = GLKMatrix4Multiply(GLKMatrixStackGetMatrix4(modelView_stack), modelViewMatrix);
     
     _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
     
@@ -882,6 +895,9 @@ float HiPassFilter (float currentVal, float previousVal) {
     
     //_rotation += self.timeSinceLastUpdate * 0.5f;
     //_rotation = 0.0f;
+    
+    // following CF Memory guidelines
+    CFRelease(modelView_stack);
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -936,6 +952,7 @@ float HiPassFilter (float currentVal, float previousVal) {
             
             break;
     }
+
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation
