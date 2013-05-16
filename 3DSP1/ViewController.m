@@ -26,6 +26,8 @@
 
 #define ApplyFilters                    1
 //#define FilterThreshold                 .3 // Moved to UI
+#define Clamping                        1
+#define Filtering                       !Clamping
 
 #define DebugEulerAngles                0
 #define DebugQuat                       0
@@ -198,12 +200,10 @@ GLfloat gMarkerVertexData[126] =
     CMMotionManager * sensorManager;
     CMAttitude * startAttitude;
     
-    // Shared accelerometer data
-    float prevAccelX;
-    float prevAccelY;
-    float prevAccelZ;
-    
     // Sensor fusion accelerometer data
+    double prevAccelX;
+    double prevAccelY;
+    double prevAccelZ;
     double x_pos, y_pos, z_pos;
     double x_vel, y_vel, z_vel;
     
@@ -254,6 +254,7 @@ GLfloat gMarkerVertexData[126] =
 - (void) disableDeviceMotionSensors;
 - (void) enableDeviceMotionSensors;
 - (CMMotionManager *) motionManager;
+- (double) HiPassFilter2:(double)currentVal prev:(double)previousVal;
 - (void)logToScreenAndConsole:(NSString*)text;
 
 #if DeviceMotionNoQueue
@@ -464,6 +465,10 @@ float HiPassFilter (float currentVal, float previousVal) {
     return currentVal - ( (currentVal * HPFilterFactor) + (previousVal * (1.0 - HPFilterFactor)) );
 }
 
+- (double) HiPassFilter2:(double)currentVal prev:(double)previousVal {
+    return currentVal - ( (currentVal * filterValStepper.value) + (previousVal * (1.0 - filterValStepper.value)) );
+}
+
 
 // sharedAccelerometer implementation - turn off if using CoreMotion
 #if SharedAccel
@@ -526,9 +531,19 @@ float HiPassFilter (float currentVal, float previousVal) {
             //          x_vel                x_velNext
             
 #if ApplyFilters
-            if ( fabs(currentAccelerationX) < filterValStepper.value) currentAccelerationX = 0.0f;
-            if ( fabs(currentAccelerationY) < filterValStepper.value) currentAccelerationY = 0.0f;
-            if ( fabs(currentAccelerationZ) < filterValStepper.value) currentAccelerationZ = 0.0f;
+#if Clamping
+            if ( fabs(currentAccelerationX) < filterValStepper.value) currentAccelerationX = 0.0;
+            if ( fabs(currentAccelerationY) < filterValStepper.value) currentAccelerationY = 0.0;
+            if ( fabs(currentAccelerationZ) < filterValStepper.value) currentAccelerationZ = 0.0;
+#endif
+#if Filtering
+            currentAccelerationX = [self HiPassFilter2:currentAccelerationX prev:prevAccelX];
+            currentAccelerationY = [self HiPassFilter2:currentAccelerationY prev:prevAccelY];
+            currentAccelerationZ = [self HiPassFilter2:currentAccelerationZ prev:prevAccelZ];
+            prevAccelX = currentAccelerationX;
+            prevAccelY = currentAccelerationY;
+            prevAccelZ = currentAccelerationZ;
+#endif
 #endif
             
             x_posNext = x_pos + (x_vel * (1.0/sensorFrequencyStepper.value)) + (.5 * currentAccelerationX * pow(1.0/sensorFrequencyStepper.value,2));
@@ -640,12 +655,19 @@ float HiPassFilter (float currentVal, float previousVal) {
     //  TRANSLATION
     
 #if ApplyFilters
+#if Clamping
     if ( fabs(currentAccelerationX) < filterValStepper.value) currentAccelerationX = 0.0;
     if ( fabs(currentAccelerationY) < filterValStepper.value) currentAccelerationY = 0.0;
     if ( fabs(currentAccelerationZ) < filterValStepper.value) currentAccelerationZ = 0.0;
-//    currentAccelerationZ = 0.0;
-//    currentAccelerationY = 0.0;
-//    currentAccelerationX = 0.0;
+#endif
+#if Filtering
+    currentAccelerationX = [self HiPassFilter2:currentAccelerationX prev:prevAccelX];
+    currentAccelerationY = [self HiPassFilter2:currentAccelerationY prev:prevAccelY];
+    currentAccelerationZ = [self HiPassFilter2:currentAccelerationZ prev:prevAccelZ];
+    prevAccelX = currentAccelerationX;
+    prevAccelY = currentAccelerationY;
+    prevAccelZ = currentAccelerationZ;
+#endif
 #endif
     
     x_posNext = x_pos + (x_vel * (1.0/sensorFrequencyStepper.value)) + (.5 * currentAccelerationX * pow(1.0/sensorFrequencyStepper.value,2));
